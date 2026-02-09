@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(psql:*)",
+      "Bash(tree:*)",
+      "Bash(dir \"C:\\\\Dev\\\\HerPaceApp\\\\frontend\\\\src\" /s /b)",
+      "Bash(findstr:*)",
+      "Bash(npx shadcn@latest add accordion)",
+      "Bash(npm run build:*)",
+      "WebSearch",
+      "Bash(dotnet build:*)",
+      "Bash(npm install:*)",
+      "WebFetch(domain:ai.google.dev)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Dev\\\\HerPaceApp\\\\backend\" -Filter \"*Gemini*.cs\" -Recurse -ErrorAction SilentlyContinue)",
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Dev\\\\HerPaceApp\\\\backend\\\\src\" -Directory)",
+      "Bash(Select-Object -ExpandProperty Name)"
+    ]
+  }
+}

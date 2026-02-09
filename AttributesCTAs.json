@@ -1,0 +1,2085 @@
+[
+  {
+    "objectName": "TRAINING PLAN",
+    "attributes": [
+      {
+        "name": "Plan Name",
+        "type": "Core Content",
+        "dataType": "String",
+        "format": "Text",
+        "required": true,
+        "description": "e.g., Marathon Training Plan",
+        "guide": {
+          "general": {
+            "potentialValues": "Any text",
+            "valueSource": "User Input",
+            "isRequired": "Yes"
+          },
+          "mcsfd": {
+            "mechanics": "Editable text field",
+            "cardinality": "1 per plan",
+            "sorts": "Alphabetical",
+            "filters": "Search by name",
+            "dependencyOnHost": "None"
+          },
+          "other": {
+            "relative": "None",
+            "conditionalLogic": "None",
+            "notes": "Main identifier",
+            "privacy": "Public if shared"
+          }
+        }
+      },
+      {
+        "name": "Plan Time Goal",
+        "type": "Metadata",
+        "dataType": "String",
+        "format": "Time",
+        "required": true,
+        "description": "e.g., mm:ss",
+        "guide": {
+          "general": {
+            "potentialValues": "HH:MM:SS",
+            "valueSource": "User Input",
+            "isRequired": "Yes"
+          },
+          "mcsfd": {
+            "mechanics": "Time picker",
+            "cardinality": "1 per plan",
+            "sorts": "None",
+            "filters": "None",
+            "dependencyOnHost": "None"
+          },
+          "other": {
+            "relative": "None",
+            "conditionalLogic": "None",
+            "notes": "Target race time",
+            "privacy": "Private"
+          }
+        }
+      },
+      {
+        "name": "Plan Completion Goal",
+        "type": "Metadata",
+        "dataType": "String",
+        "format": "Text",
+        "required": true,
+        "description": "e.g., I want to complete the race",
+        "guide": {
+          "general": {
+            "potentialValues": "Free text",
+            "valueSource": "User Input",
+            "isRequired": "Yes"
+          },
+          "mcsfd": {
+            "mechanics": "Text area",
+            "cardinality": "1 per plan",
+            "sorts": "None",
+            "filters": "None",
+            "dependencyOnHost": "None"
+          },
+          "other": {
+            "relative": "None",
+            "conditionalLogic": "None",
+            "notes": "Qualitative goal",
+            "privacy": "Private"
+          }
+        }
+      },
+      {
+        "name": "Start Date",
+        "type": "Metadata",
+        "dataType": "Date",
+        "format": "MM/DD/YYYY",
+        "required": true,
+        "description": "e.g., 01/01/2026",
+        "guide": {
+          "general": {
+            "potentialValues": "Date",
+            "valueSource": "User Input",
+            "isRequired": "Yes"
+          },
+          "mcsfd": {
+            "mechanics": "Date picker",
+            "cardinality": "1 per plan",
+            "sorts": "Chronological",
+            "filters": "Date Range",
+            "dependencyOnHost": "None"
+          },
+          "other": {
+            "relative": "None",
+            "conditionalLogic": "Must be before End Date",
+            "notes": "Plan start",
+            "privacy": "Private"
+          }
+        }
+      },
+      {
+        "name": "End Date",
+        "type": "Metadata",
+        "dataType": "Date",
+        "format": "MM/DD/YYYY",
+        "required": true,
+        "description": "e.g., 05/01/2026",
+        "guide": {
+          "general": {
+            "potentialValues": "Date",
+            "valueSource": "User Input (or Calculated)",
+            "isRequired": "Yes"
+          },
+          "mcsfd": {
+            "mechanics": "Date picker",
+            "cardinality": "1 per plan",
+            "sorts": "Chronological",
+            "filters": "Date Range",
+            "dependencyOnHost": "None"
+          },
+          "other": {
+            "relative": "None",
+            "conditionalLogic": "Must be after Start Date",
+            "notes": "Usually Race Date",
+            "privacy": "Private"
+          }
+        }
+      },
+      {
+        "name": "Plan Duration (Weeks)",
+        "type": "Metadata",
+        "dataType": "Number",
+        "format": "Integer",
+        "required": true,
+        "description": "e.g., 16 weeks",
+        "guide": {
+          "general": {
+            "potentialValues": "1-52",
+            "valueSource": "Calculated",
+            "isRequired": "Yes"
+          },
+          "mcsfd": {
+            "mechanics": "Read only",
+            "cardinality": "1 per plan",
+            "sorts": "Numeric",
+            "filters": "Duration Range",
+            "dependencyOnHost": "Start/End Date"
+          },
+          "other": {
+            "relative": "None",
+            "conditionalLogic": "End Date - Start Date",
+            "notes": "Auto-calculated",
+            "privacy": "Private"
+          }
+        }
+      },
+      {
+        "name": "Current Week",
+        "type": "Metadata",
+        "dataType": "Number",
+        "format": "Integer",
+        "required": true,
+        "description": "e.g., Week 5",
+        "guide": {
+          "general": {
+            "potentialValues": "1-Total Weeks",
+            "valueSource": "Calculated",
+            "isRequired": "Yes"
+          },
+          "mcsfd": {
+            "mechanics": "Read only",
+            "cardinality": "1 per plan",
+            "sorts": "None",
+            "filters": "None",
+            "dependencyOnHost": "Current Date"
+          },
+          "other": {
+            "relative": "None",
+            "conditionalLogic": "Based on today's date",
+            "notes": "Dynamic",
+            "privacy": "Private"
+          }
+        }
+      },
+      {
+        "name": "Progress %",
+        "type": "Metadata",
+        "dataType": "Number",
+        "format": "Percentage",
+        "required": true,
+        "description": "e.g., 30% complete",
+        "guide": {
+          "general": {
+            "potentialValues": "0-100%",
+            "valueSource": "Calculated",
+            "isRequired": "Yes"
+          },
+          "mcsfd": {
+            "mechanics": "Progress bar",
+            "cardinality": "1 per plan",
+            "sorts": "Numeric",
+            "filters": "None",
+            "dependencyOnHost": "Completed Sessions"
+          },
+          "other": {
+            "relative": "None",
+            "conditionalLogic": "Completed / Total Sessions",
+            "notes": "Visual indicator",
+            "privacy": "Private"
+          }
+        }
+      },
+      {
+        "name": "Current Plan Stage",
+        "type": "Metadata",
+        "dataType": "String",
+        "format": "Enum",
+        "required": true,
+        "description": "e.g., Base, build, peak, taper, recovery",
+        "guide": {
+          "general": {
+            "potentialValues": "Base, Build, Peak, Taper, Recovery",
+            "valueSource": "System",
+            "isRequired": "Yes"
+          },
+          "mcsfd": {
+            "mechanics": "Label/Tag",
+            "cardinality": "1 per plan",
+            "sorts": "None",
+            "filters": "Stage",
+            "dependencyOnHost": "Current Week"
+          },
+          "other": {
+            "relative": "None",
+            "conditionalLogic": "Mapped to specific weeks",
+            "notes": "Training phase",
+            "privacy": "Private"
+          }
+        }
+      },
+      {
+        "name": "Cycle Integration Status",
+        "type": "Metadata",
+        "dataType": "String",
+        "format": "Enum",
+        "required": true,
+        "description": "e.g., synced, estimated, manual",
+        "guide": {
+          "general": {
+            "potentialValues": "Synced, Estimated, Manual",
+            "valueSource": "System",
+            "isRequired": "Yes"
+          },
+          "mcsfd": {
+            "mechanics": "Status indicator",
+            "cardinality": "1 per plan",
+            "sorts": "None",
+            "filters": "Status",
+            "dependencyOnHost": "Athlete Cycle Data"
+          },
+          "other": {
+            "relative": "None",
+            "conditionalLogic": "Based on cycle data availability",
+            "notes": "Key differentiator",
+            "privacy": "Private"
+          }
+        }
+      },
+      {
+        "name": "Weekly Mileage Goal",
+        "type": "Metadata",
+        "dataType": "Number",
+        "format": "Decimal",
+        "required": true,
+        "description": "e.g., 30 km/mi per week",
+        "guide": {
+          "general": {
+            "potentialValues": "0-200",
+            "valueSource": "System/User",
+            "isRequired": "Yes"
+          },
+          "mcsfd": {
+            "mechanics": "Number input",
+            "cardinality": "1 per plan",
+            "sorts": "Numeric",
+            "filters": "None",
+            "dependencyOnHost": "None"
+          },
+          "other": {
+            "relative": "None",
+            "conditionalLogic": "Varies by week",
+            "notes": "Volume target",
+            "privacy": "Private"
+          }
+        }
+      },
+      {
+        "name": "Training Days per Week",
+        "type": "Metadata",
+        "dataType": "Number",
+        "format": "Integer",
+        "required": true,
+        "description": "e.g., 4",
+        "guide": {
+          "general": {
+            "potentialValues": "1-7",
+            "valueSource": "User Input",
+            "isRequired": "Yes"
+          },
+          "mcsfd": {
+            "mechanics": "Number selector",
+            "cardinality": "1 per plan",
+            "sorts": "None",
+            "filters": "None",
+            "dependencyOnHost": "None"
+          },
+          "other": {
+            "relative": "None",
+            "conditionalLogic": "None",
+            "notes": "Frequency",
+            "privacy": "Private"
+          }
+        }
+      },
+      {
+        "name": "Long Run Day",
+        "type": "Metadata",
+        "dataType": "String",
+        "format": "Day of Week",
+        "required": true,
+        "description": "e.g., monday",
+        "guide": {
+          "general": {
+            "potentialValues": "Mon-Sun",
+            "valueSource": "User Input",
+            "isRequired": "Yes"
+          },
+          "mcsfd": {
+            "mechanics": "Dropdown",
+            "cardinality": "1 per plan",
+            "sorts": "None",
+            "filters": "None",
+            "dependencyOnHost": "None"
+          },
+          "other": {
+            "relative": "None",
+            "conditionalLogic": "None",
+            "notes": "Key scheduling anchor",
+            "privacy": "Private"
+          }
+        }
+      },
+      {
+        "name": "Days Before Period to Reduce Intensity",
+        "type": "Metadata",
+        "dataType": "Number",
+        "format": "Integer",
+        "required": true,
+        "description": "e.g., 3",
+        "guide": {
+          "general": {
+            "potentialValues": "0-7",
+            "valueSource": "User Input",
+            "isRequired": "Yes"
+          },
+          "mcsfd": {
+            "mechanics": "Number selector",
+            "cardinality": "1 per plan",
+            "sorts": "None",
+            "filters": "None",
+            "dependencyOnHost": "None"
+          },
+          "other": {
+            "relative": "None",
+            "conditionalLogic": "None",
+            "notes": "Hormonal adjustment",
+            "privacy": "Private"
+          }
+        }
+      },
+      {
+        "name": "Days After Period to Reduce Intensity",
+        "type": "Metadata",
+        "dataType": "Number",
+        "format": "Integer",
+        "required": true,
+        "description": "e.g., 2",
+        "guide": {
+          "general": {
+            "potentialValues": "0-7",
+            "valueSource": "User Input",
+            "isRequired": "Yes"
+          },
+          "mcsfd": {
+            "mechanics": "Number selector",
+            "cardinality": "1 per plan",
+            "sorts": "None",
+            "filters": "None",
+            "dependencyOnHost": "None"
+          },
+          "other": {
+            "relative": "None",
+            "conditionalLogic": "None",
+            "notes": "Hormonal adjustment",
+            "privacy": "Private"
+          }
+        }
+      },
+      {
+        "name": "Total # of Sessions in Plan",
+        "type": "Metadata",
+        "dataType": "Number",
+        "format": "Integer",
+        "required": true,
+        "description": "e.g., 70",
+        "guide": {
+          "general": {
+            "potentialValues": "Integer",
+            "valueSource": "Calculated",
+            "isRequired": "Yes"
+          },
+          "mcsfd": {
+            "mechanics": "Read only",
+            "cardinality": "1 per plan",
+            "sorts": "Numeric",
+            "filters": "None",
+            "dependencyOnHost": "Sessions"
+          },
+          "other": {
+            "relative": "None",
+            "conditionalLogic": "Sum of all sessions",
+            "notes": "Total volume count",
+            "privacy": "Private"
+          }
+        }
+      },
+      {
+        "name": "Completed Sessions",
+        "type": "Metadata",
+        "dataType": "Number",
+        "format": "Integer",
+        "required": true,
+        "description": "e.g., 8",
+        "guide": {
+          "general": {
+            "potentialValues": "Integer",
+            "valueSource": "Calculated",
+            "isRequired": "Yes"
+          },
+          "mcsfd": {
+            "mechanics": "Read only",
+            "cardinality": "1 per plan",
+            "sorts": "Numeric",
+            "filters": "None",
+            "dependencyOnHost": "Sessions status"
+          },
+          "other": {
+            "relative": "None",
+            "conditionalLogic": "Count where status=complete",
+            "notes": "Progress metric",
+            "privacy": "Private"
+          }
+        }
+      },
+      {
+        "name": "Skipped Sessions",
+        "type": "Metadata",
+        "dataType": "Number",
+        "format": "Integer",
+        "required": true,
+        "description": "e.g., 8",
+        "guide": {
+          "general": {
+            "potentialValues": "Integer",
+            "valueSource": "Calculated",
+            "isRequired": "Yes"
+          },
+          "mcsfd": {
+            "mechanics": "Read only",
+            "cardinality": "1 per plan",
+            "sorts": "Numeric",
+            "filters": "None",
+            "dependencyOnHost": "Sessions status"
+          },
+          "other": {
+            "relative": "None",
+            "conditionalLogic": "Count where status=skipped",
+            "notes": "Adherence metric",
+            "privacy": "Private"
+          }
+        }
+      },
+      {
+        "name": "Status",
+        "type": "Metadata",
+        "dataType": "String",
+        "format": "Enum",
+        "required": true,
+        "description": "e.g., Active, Archived, Paused",
+        "guide": {
+          "general": {
+            "potentialValues": "Active, Paused, Archived, Completed",
+            "valueSource": "System/User",
+            "isRequired": "Yes"
+          },
+          "mcsfd": {
+            "mechanics": "Status badge",
+            "cardinality": "1 per plan",
+            "sorts": "Status",
+            "filters": "Status",
+            "dependencyOnHost": "None"
+          },
+          "other": {
+            "relative": "None",
+            "conditionalLogic": "None",
+            "notes": "Lifecycle state",
+            "privacy": "Private"
+          }
+        }
+      }
+    ],
+    "ctas": [
+      {
+        "name": "Create",
+        "description": "Create a new training plan",
+        "ctaSpec": {
+          "role": "User",
+          "userStory": "As a user, I want to create a new training plan so that I can start preparing for my race.",
+          "placement": [
+            "List"
+          ],
+          "ixdNotes": "Opens the plan creation wizard.",
+          "isPartOfFlow": true,
+          "location": "Top right of Plans list"
+        }
+      },
+      {
+        "name": "Edit",
+        "description": "Edit plan details",
+        "ctaSpec": {
+          "role": "User",
+          "userStory": "As a user, I want to edit my plan details so that I can adjust my goals or schedule.",
+          "placement": [
+            "Detail"
+          ],
+          "ixdNotes": "Opens a modal with editable plan fields.",
+          "isPartOfFlow": false,
+          "location": "Top right of Plan Detail page"
+        }
+      },
+      {
+        "name": "Pause",
+        "description": "Pause the training plan",
+        "ctaSpec": {
+          "role": "User",
+          "userStory": "As a user, I want to pause my plan so that I can take a break without falling behind.",
+          "placement": [
+            "Detail"
+          ],
+          "ixdNotes": "Toggles status to 'Paused'. Stops sending notifications.",
+          "isPartOfFlow": false,
+          "location": "Plan settings menu"
+        }
+      },
+      {
+        "name": "Archive",
+        "description": "Archive the plan",
+        "ctaSpec": {
+          "role": "User",
+          "userStory": "As a user, I want to archive completed plans so that my active list stays clean.",
+          "placement": [
+            "Detail",
+            "List"
+          ],
+          "ixdNotes": "Moves plan to 'Archived' tab. Read-only mode.",
+          "isPartOfFlow": false,
+          "location": "Plan settings menu"
+        }
+      },
+      {
+        "name": "Delete",
+        "description": "Delete the plan",
+        "ctaSpec": {
+          "role": "User",
+          "userStory": "As a user, I want to delete a plan I created by mistake so that it doesn't clutter my account.",
+          "placement": [
+            "Detail"
+          ],
+          "ixdNotes": "Requires confirmation dialog. Irreversible.",
+          "isPartOfFlow": false,
+          "location": "Plan settings menu (Danger Zone)"
+        }
+      },
+      {
+        "name": "Share",
+        "description": "Share the plan",
+        "ctaSpec": {
+          "role": "User",
+          "userStory": "As a user, I want to share my plan with a friend or coach so they can see my progress.",
+          "placement": [
+            "Detail"
+          ],
+          "ixdNotes": "Generates a shareable link or image summary.",
+          "isPartOfFlow": false,
+          "location": "Top right of Plan Detail page"
+        }
+      }
+    ]
+  },
+  {
+    "objectName": "CYCLE PHASE",
+    "attributes": [
+      {
+        "name": "Hydration Requirement",
+        "type": "Core Content",
+        "dataType": "String",
+        "format": "Text",
+        "required": true,
+        "description": "e.g., High hydration needed",
+        "guide": {
+          "general": {
+            "potentialValues": "Low, Moderate, High",
+            "valueSource": "System (Rule-based)",
+            "isRequired": "Yes"
+          },
+          "mcsfd": {
+            "mechanics": "Read only text/icon",
+            "cardinality": "1 per phase",
+            "sorts": "None",
+            "filters": "None",
+            "dependencyOnHost": "Phase Type"
+          },
+          "other": {
+            "relative": "None",
+            "conditionalLogic": "Based on progesterone levels",
+            "notes": "Critical for performance",
+            "privacy": "Private"
+          }
+        }
+      },
+      {
+        "name": "Carb Requirement",
+        "type": "Core Content",
+        "dataType": "String",
+        "format": "Text",
+        "required": true,
+        "description": "e.g., Moderate carb intake",
+        "guide": {
+          "general": {
+            "potentialValues": "Low, Moderate, High",
+            "valueSource": "System (Rule-based)",
+            "isRequired": "Yes"
+          },
+          "mcsfd": {
+            "mechanics": "Read only text/icon",
+            "cardinality": "1 per phase",
+            "sorts": "None",
+            "filters": "None",
+            "dependencyOnHost": "Phase Type"
+          },
+          "other": {
+            "relative": "None",
+            "conditionalLogic": "Based on insulin sensitivity",
+            "notes": "Fueling strategy",
+            "privacy": "Private"
+          }
+        }
+      },
+      {
+        "name": "Phase",
+        "type": "Metadata",
+        "dataType": "String",
+        "format": "Enum",
+        "required": true,
+        "description": "e.g., follicular, ovulation, luteal, menstrual",
+        "guide": {
+          "general": {
+            "potentialValues": "Follicular, Ovulation, Luteal, Menstrual",
+            "valueSource": "System",
+            "isRequired": "Yes"
+          },
+          "mcsfd": {
+            "mechanics": "Label",
+            "cardinality": "1 per phase",
+            "sorts": "None",
+            "filters": "Phase Type",
+            "dependencyOnHost": "None"
+          },
+          "other": {
+            "relative": "None",
+            "conditionalLogic": "None",
+            "notes": "Primary identifier",
+            "privacy": "Private"
+          }
+        }
+      },
+      {
+        "name": "Progesterone Level",
+        "type": "Metadata",
+        "dataType": "String",
+        "format": "Enum",
+        "required": true,
+        "description": "e.g., low, medium, high",
+        "guide": {
+          "general": {
+            "potentialValues": "Low, Medium, High",
+            "valueSource": "System",
+            "isRequired": "Yes"
+          },
+          "mcsfd": {
+            "mechanics": "Read only",
+            "cardinality": "1 per phase",
+            "sorts": "None",
+            "filters": "None",
+            "dependencyOnHost": "Phase Type"
+          },
+          "other": {
+            "relative": "None",
+            "conditionalLogic": "None",
+            "notes": "Hormonal profile",
+            "privacy": "Private"
+          }
+        }
+      },
+      {
+        "name": "Estrogen Level",
+        "type": "Metadata",
+        "dataType": "String",
+        "format": "Enum",
+        "required": true,
+        "description": "e.g., low, medium, high",
+        "guide": {
+          "general": {
+            "potentialValues": "Low, Medium, High",
+            "valueSource": "System",
+            "isRequired": "Yes"
+          },
+          "mcsfd": {
+            "mechanics": "Read only",
+            "cardinality": "1 per phase",
+            "sorts": "None",
+            "filters": "None",
+            "dependencyOnHost": "Phase Type"
+          },
+          "other": {
+            "relative": "None",
+            "conditionalLogic": "None",
+            "notes": "Hormonal profile",
+            "privacy": "Private"
+          }
+        }
+      },
+      {
+        "name": "FSH Level",
+        "type": "Metadata",
+        "dataType": "String",
+        "format": "Enum",
+        "required": true,
+        "description": "e.g., low, medium, high",
+        "guide": {
+          "general": {
+            "potentialValues": "Low, Medium, High",
+            "valueSource": "System",
+            "isRequired": "Yes"
+          },
+          "mcsfd": {
+            "mechanics": "Read only",
+            "cardinality": "1 per phase",
+            "sorts": "None",
+            "filters": "None",
+            "dependencyOnHost": "Phase Type"
+          },
+          "other": {
+            "relative": "None",
+            "conditionalLogic": "None",
+            "notes": "Hormonal profile",
+            "privacy": "Private"
+          }
+        }
+      },
+      {
+        "name": "LH Level",
+        "type": "Metadata",
+        "dataType": "String",
+        "format": "Enum",
+        "required": true,
+        "description": "e.g., low, medium, high",
+        "guide": {
+          "general": {
+            "potentialValues": "Low, Medium, High",
+            "valueSource": "System",
+            "isRequired": "Yes"
+          },
+          "mcsfd": {
+            "mechanics": "Read only",
+            "cardinality": "1 per phase",
+            "sorts": "None",
+            "filters": "None",
+            "dependencyOnHost": "Phase Type"
+          },
+          "other": {
+            "relative": "None",
+            "conditionalLogic": "None",
+            "notes": "Hormonal profile",
+            "privacy": "Private"
+          }
+        }
+      },
+      {
+        "name": "Avg. Duration (Days)",
+        "type": "Metadata",
+        "dataType": "Number",
+        "format": "Integer",
+        "required": true,
+        "description": "e.g., 15 days",
+        "guide": {
+          "general": {
+            "potentialValues": "1-20",
+            "valueSource": "System/User History",
+            "isRequired": "Yes"
+          },
+          "mcsfd": {
+            "mechanics": "Read only",
+            "cardinality": "1 per phase",
+            "sorts": "None",
+            "filters": "None",
+            "dependencyOnHost": "User History"
+          },
+          "other": {
+            "relative": "None",
+            "conditionalLogic": "Varies by user",
+            "notes": "Prediction basis",
+            "privacy": "Private"
+          }
+        }
+      },
+      {
+        "name": "Injury Risk",
+        "type": "Metadata",
+        "dataType": "String",
+        "format": "Enum",
+        "required": true,
+        "description": "e.g., low, medium, high",
+        "guide": {
+          "general": {
+            "potentialValues": "Low, Medium, High",
+            "valueSource": "System",
+            "isRequired": "Yes"
+          },
+          "mcsfd": {
+            "mechanics": "Alert/Badge",
+            "cardinality": "1 per phase",
+            "sorts": "None",
+            "filters": "Risk Level",
+            "dependencyOnHost": "Phase Type"
+          },
+          "other": {
+            "relative": "None",
+            "conditionalLogic": "High in Luteal (ligament laxity)",
+            "notes": "Safety warning",
+            "privacy": "Private"
+          }
+        }
+      },
+      {
+        "name": "Endurance Potential",
+        "type": "Metadata",
+        "dataType": "String",
+        "format": "Enum",
+        "required": true,
+        "description": "e.g., low, medium, high",
+        "guide": {
+          "general": {
+            "potentialValues": "Low, Medium, High",
+            "valueSource": "System",
+            "isRequired": "Yes"
+          },
+          "mcsfd": {
+            "mechanics": "Read only",
+            "cardinality": "1 per phase",
+            "sorts": "None",
+            "filters": "None",
+            "dependencyOnHost": "Phase Type"
+          },
+          "other": {
+            "relative": "None",
+            "conditionalLogic": "None",
+            "notes": "Performance insight",
+            "privacy": "Private"
+          }
+        }
+      },
+      {
+        "name": "Strength Potential",
+        "type": "Metadata",
+        "dataType": "String",
+        "format": "Enum",
+        "required": true,
+        "description": "e.g., low, medium, high",
+        "guide": {
+          "general": {
+            "potentialValues": "Low, Medium, High",
+            "valueSource": "System",
+            "isRequired": "Yes"
+          },
+          "mcsfd": {
+            "mechanics": "Read only",
+            "cardinality": "1 per phase",
+            "sorts": "None",
+            "filters": "None",
+            "dependencyOnHost": "Phase Type"
+          },
+          "other": {
+            "relative": "None",
+            "conditionalLogic": "None",
+            "notes": "Performance insight",
+            "privacy": "Private"
+          }
+        }
+      },
+      {
+        "name": "Speed Potential",
+        "type": "Metadata",
+        "dataType": "String",
+        "format": "Enum",
+        "required": true,
+        "description": "e.g., low, medium, high",
+        "guide": {
+          "general": {
+            "potentialValues": "Low, Medium, High",
+            "valueSource": "System",
+            "isRequired": "Yes"
+          },
+          "mcsfd": {
+            "mechanics": "Read only",
+            "cardinality": "1 per phase",
+            "sorts": "None",
+            "filters": "None",
+            "dependencyOnHost": "Phase Type"
+          },
+          "other": {
+            "relative": "None",
+            "conditionalLogic": "None",
+            "notes": "Performance insight",
+            "privacy": "Private"
+          }
+        }
+      },
+      {
+        "name": "Start Date",
+        "type": "Metadata",
+        "dataType": "Date",
+        "format": "MM/DD/YYYY",
+        "required": true,
+        "description": "e.g., 01/01/2026",
+        "guide": {
+          "general": {
+            "potentialValues": "Date",
+            "valueSource": "Calculated/User Input",
+            "isRequired": "Yes"
+          },
+          "mcsfd": {
+            "mechanics": "Date picker",
+            "cardinality": "1 per phase",
+            "sorts": "Chronological",
+            "filters": "Date Range",
+            "dependencyOnHost": "None"
+          },
+          "other": {
+            "relative": "None",
+            "conditionalLogic": "None",
+            "notes": "Phase boundary",
+            "privacy": "Private"
+          }
+        }
+      },
+      {
+        "name": "End Date",
+        "type": "Metadata",
+        "dataType": "Date",
+        "format": "MM/DD/YYYY",
+        "required": true,
+        "description": "e.g., 01/15/2026",
+        "guide": {
+          "general": {
+            "potentialValues": "Date",
+            "valueSource": "Calculated/User Input",
+            "isRequired": "Yes"
+          },
+          "mcsfd": {
+            "mechanics": "Date picker",
+            "cardinality": "1 per phase",
+            "sorts": "Chronological",
+            "filters": "Date Range",
+            "dependencyOnHost": "None"
+          },
+          "other": {
+            "relative": "None",
+            "conditionalLogic": "None",
+            "notes": "Phase boundary",
+            "privacy": "Private"
+          }
+        }
+      }
+    ],
+    "ctas": [
+      {
+        "name": "Log Period Start",
+        "description": "Log the start of a period",
+        "ctaSpec": {
+          "role": "User",
+          "userStory": "As a user, I want to log when my period starts so that the app can predict my cycle phases accurately.",
+          "placement": [
+            "Card",
+            "Detail"
+          ],
+          "ixdNotes": "Opens date picker. Defaults to today.",
+          "isPartOfFlow": false,
+          "location": "Prominent button on Dashboard/Phase Card"
+        }
+      },
+      {
+        "name": "Log Symptoms",
+        "description": "Log daily symptoms",
+        "ctaSpec": {
+          "role": "User",
+          "userStory": "As a user, I want to log my symptoms so that I can track how I feel during different phases.",
+          "placement": [
+            "Detail"
+          ],
+          "ixdNotes": "Opens symptom checklist modal.",
+          "isPartOfFlow": false,
+          "location": "Phase Detail page"
+        }
+      },
+      {
+        "name": "Adjust Phase Dates",
+        "description": "Manually adjust phase dates",
+        "ctaSpec": {
+          "role": "User",
+          "userStory": "As a user, I want to manually adjust phase dates if the prediction is off so that my training aligns with my actual physiology.",
+          "placement": [
+            "Detail"
+          ],
+          "ixdNotes": "Allows overriding system-calculated dates.",
+          "isPartOfFlow": false,
+          "location": "Phase settings / Edit mode"
+        }
+      },
+      {
+        "name": "View Phase Insights",
+        "description": "View detailed insights",
+        "ctaSpec": {
+          "role": "User",
+          "userStory": "As a user, I want to learn more about my current phase so that I can optimize my nutrition and recovery.",
+          "placement": [
+            "Detail"
+          ],
+          "ixdNotes": "Expands educational content section.",
+          "isPartOfFlow": false,
+          "location": "Phase Detail page"
+        }
+      }
+    ]
+  },
+  {
+    "objectName": "ATHLETE",
+    "attributes": [
+      {
+        "name": "Name",
+        "type": "Core Content",
+        "dataType": "String",
+        "format": "Text",
+        "required": true,
+        "description": "e.g., Laur Aria",
+        "guide": {
+          "general": {
+            "potentialValues": "Any text",
+            "valueSource": "User Input",
+            "isRequired": "Yes"
+          },
+          "mcsfd": {
+            "mechanics": "Text field",
+            "cardinality": "1 per athlete",
+            "sorts": "Alphabetical",
+            "filters": "Search",
+            "dependencyOnHost": "None"
+          },
+          "other": {
+            "relative": "None",
+            "conditionalLogic": "None",
+            "notes": "Display name",
+            "privacy": "Private"
+          }
+        }
+      },
+      {
+        "name": "Date of Birth",
+        "type": "Metadata",
+        "dataType": "Date",
+        "format": "MM/DD/YYYY",
+        "required": true,
+        "description": "e.g., 01/01/1990",
+        "guide": {
+          "general": {
+            "potentialValues": "Date",
+            "valueSource": "User Input",
+            "isRequired": "Yes"
+          },
+          "mcsfd": {
+            "mechanics": "Date picker",
+            "cardinality": "1 per athlete",
+            "sorts": "Age",
+            "filters": "Age Group",
+            "dependencyOnHost": "None"
+          },
+          "other": {
+            "relative": "None",
+            "conditionalLogic": "None",
+            "notes": "Used for age grading",
+            "privacy": "Private"
+          }
+        }
+      },
+      {
+        "name": "5k PR",
+        "type": "Metadata",
+        "dataType": "String",
+        "format": "Time",
+        "required": false,
+        "description": "e.g., 25:00",
+        "guide": {
+          "general": {
+            "potentialValues": "HH:MM:SS",
+            "valueSource": "User Input",
+            "isRequired": "No"
+          },
+          "mcsfd": {
+            "mechanics": "Time picker",
+            "cardinality": "1 per athlete",
+            "sorts": "Time",
+            "filters": "None",
+            "dependencyOnHost": "None"
+          },
+          "other": {
+            "relative": "None",
+            "conditionalLogic": "None",
+            "notes": "Performance benchmark",
+            "privacy": "Private"
+          }
+        }
+      },
+      {
+        "name": "10k PR",
+        "type": "Metadata",
+        "dataType": "String",
+        "format": "Time",
+        "required": false,
+        "description": "e.g., 55:00",
+        "guide": {
+          "general": {
+            "potentialValues": "HH:MM:SS",
+            "valueSource": "User Input",
+            "isRequired": "No"
+          },
+          "mcsfd": {
+            "mechanics": "Time picker",
+            "cardinality": "1 per athlete",
+            "sorts": "Time",
+            "filters": "None",
+            "dependencyOnHost": "None"
+          },
+          "other": {
+            "relative": "None",
+            "conditionalLogic": "None",
+            "notes": "Performance benchmark",
+            "privacy": "Private"
+          }
+        }
+      },
+      {
+        "name": "Half Marathon PR",
+        "type": "Metadata",
+        "dataType": "String",
+        "format": "Time",
+        "required": false,
+        "description": "e.g., 02:00:00",
+        "guide": {
+          "general": {
+            "potentialValues": "HH:MM:SS",
+            "valueSource": "User Input",
+            "isRequired": "No"
+          },
+          "mcsfd": {
+            "mechanics": "Time picker",
+            "cardinality": "1 per athlete",
+            "sorts": "Time",
+            "filters": "None",
+            "dependencyOnHost": "None"
+          },
+          "other": {
+            "relative": "None",
+            "conditionalLogic": "None",
+            "notes": "Performance benchmark",
+            "privacy": "Private"
+          }
+        }
+      },
+      {
+        "name": "Marathon PR",
+        "type": "Metadata",
+        "dataType": "String",
+        "format": "Time",
+        "required": false,
+        "description": "e.g., 04:30:00",
+        "guide": {
+          "general": {
+            "potentialValues": "HH:MM:SS",
+            "valueSource": "User Input",
+            "isRequired": "No"
+          },
+          "mcsfd": {
+            "mechanics": "Time picker",
+            "cardinality": "1 per athlete",
+            "sorts": "Time",
+            "filters": "None",
+            "dependencyOnHost": "None"
+          },
+          "other": {
+            "relative": "None",
+            "conditionalLogic": "None",
+            "notes": "Performance benchmark",
+            "privacy": "Private"
+          }
+        }
+      },
+      {
+        "name": "Unit Preference",
+        "type": "Metadata",
+        "dataType": "String",
+        "format": "Enum",
+        "required": true,
+        "description": "e.g., Miles/Kilometers",
+        "guide": {
+          "general": {
+            "potentialValues": "Miles, Kilometers",
+            "valueSource": "User Input",
+            "isRequired": "Yes"
+          },
+          "mcsfd": {
+            "mechanics": "Radio buttons",
+            "cardinality": "1 per athlete",
+            "sorts": "None",
+            "filters": "None",
+            "dependencyOnHost": "None"
+          },
+          "other": {
+            "relative": "None",
+            "conditionalLogic": "Affects display of all distance fields",
+            "notes": "Global setting",
+            "privacy": "Private"
+          }
+        }
+      },
+      {
+        "name": "Account Created",
+        "type": "Metadata",
+        "dataType": "Date",
+        "format": "MM/DD/YYYY",
+        "required": true,
+        "description": "e.g., 01/01/2023",
+        "guide": {
+          "general": {
+            "potentialValues": "Date",
+            "valueSource": "System",
+            "isRequired": "Yes"
+          },
+          "mcsfd": {
+            "mechanics": "Read only",
+            "cardinality": "1 per athlete",
+            "sorts": "Date",
+            "filters": "None",
+            "dependencyOnHost": "None"
+          },
+          "other": {
+            "relative": "None",
+            "conditionalLogic": "None",
+            "notes": "Audit trail",
+            "privacy": "Private"
+          }
+        }
+      },
+      {
+        "name": "Average Cycle Length",
+        "type": "Metadata",
+        "dataType": "Number",
+        "format": "Integer",
+        "required": true,
+        "description": "e.g., 28 days",
+        "guide": {
+          "general": {
+            "potentialValues": "21-35",
+            "valueSource": "User Input / Calculated",
+            "isRequired": "Yes"
+          },
+          "mcsfd": {
+            "mechanics": "Number input",
+            "cardinality": "1 per athlete",
+            "sorts": "None",
+            "filters": "None",
+            "dependencyOnHost": "None"
+          },
+          "other": {
+            "relative": "None",
+            "conditionalLogic": "Used to project future phases",
+            "notes": "Biological constant",
+            "privacy": "Private"
+          }
+        }
+      },
+      {
+        "name": "Last Period Date",
+        "type": "Metadata",
+        "dataType": "Date",
+        "format": "MM/DD/YYYY",
+        "required": true,
+        "description": "e.g., 01/01/2024",
+        "guide": {
+          "general": {
+            "potentialValues": "Date",
+            "valueSource": "User Input",
+            "isRequired": "Yes"
+          },
+          "mcsfd": {
+            "mechanics": "Date picker",
+            "cardinality": "1 per athlete",
+            "sorts": "Date",
+            "filters": "None",
+            "dependencyOnHost": "None"
+          },
+          "other": {
+            "relative": "None",
+            "conditionalLogic": "Anchor for current cycle phase",
+            "notes": "Most recent data point",
+            "privacy": "Private"
+          }
+        }
+      }
+    ],
+    "ctas": [
+      {
+        "name": "Edit Profile",
+        "description": "Edit profile details",
+        "ctaSpec": {
+          "role": "User",
+          "userStory": "As a user, I want to update my profile information so that my training plan is based on my current stats.",
+          "placement": [
+            "Detail"
+          ],
+          "ixdNotes": "Opens profile edit form.",
+          "isPartOfFlow": false,
+          "location": "Profile settings"
+        }
+      },
+      {
+        "name": "Update PRs",
+        "description": "Update personal records",
+        "ctaSpec": {
+          "role": "User",
+          "userStory": "As a user, I want to log a new PR so that my training paces can be adjusted.",
+          "placement": [
+            "Detail"
+          ],
+          "ixdNotes": "Opens PR update modal.",
+          "isPartOfFlow": false,
+          "location": "PR section of Profile"
+        }
+      },
+      {
+        "name": "Change unit preference",
+        "description": "Switch between metric/imperial",
+        "ctaSpec": {
+          "role": "User",
+          "userStory": "As a user, I want to toggle between miles and kilometers so that I can see data in my preferred format.",
+          "placement": [
+            "Detail"
+          ],
+          "ixdNotes": "Toggle switch or dropdown.",
+          "isPartOfFlow": false,
+          "location": "Settings"
+        }
+      },
+      {
+        "name": "Delete Account",
+        "description": "Delete user account",
+        "ctaSpec": {
+          "role": "User",
+          "userStory": "As a user, I want to delete my account so that my data is removed from the system.",
+          "placement": [
+            "Detail"
+          ],
+          "ixdNotes": "Requires double confirmation and password re-entry.",
+          "isPartOfFlow": false,
+          "location": "Settings (Danger Zone)"
+        }
+      }
+    ]
+  },
+  {
+    "objectName": "TRAINING SESSION",
+    "attributes": [
+      {
+        "name": "Session Name",
+        "type": "Core Content",
+        "dataType": "String",
+        "format": "Text",
+        "required": true,
+        "description": "e.g., 30 minute easy run",
+        "guide": {
+          "general": {
+            "potentialValues": "Any text",
+            "valueSource": "System/User",
+            "isRequired": "Yes"
+          },
+          "mcsfd": {
+            "mechanics": "Text field",
+            "cardinality": "1 per session",
+            "sorts": "Alphabetical",
+            "filters": "Search",
+            "dependencyOnHost": "None"
+          },
+          "other": {
+            "relative": "None",
+            "conditionalLogic": "None",
+            "notes": "Title",
+            "privacy": "Private"
+          }
+        }
+      },
+      {
+        "name": "Warm Up",
+        "type": "Core Content",
+        "dataType": "String",
+        "format": "Text",
+        "required": true,
+        "description": "e.g., 10 minute light warm up",
+        "guide": {
+          "general": {
+            "potentialValues": "Any text",
+            "valueSource": "System",
+            "isRequired": "Yes"
+          },
+          "mcsfd": {
+            "mechanics": "Text area",
+            "cardinality": "1 per session",
+            "sorts": "None",
+            "filters": "None",
+            "dependencyOnHost": "None"
+          },
+          "other": {
+            "relative": "None",
+            "conditionalLogic": "None",
+            "notes": "Instructions",
+            "privacy": "Private"
+          }
+        }
+      },
+      {
+        "name": "Session Description",
+        "type": "Core Content",
+        "dataType": "String",
+        "format": "Text",
+        "required": true,
+        "description": "e.g., Run at an easy pace for 30 minutes.",
+        "guide": {
+          "general": {
+            "potentialValues": "Any text",
+            "valueSource": "System",
+            "isRequired": "Yes"
+          },
+          "mcsfd": {
+            "mechanics": "Text area",
+            "cardinality": "1 per session",
+            "sorts": "None",
+            "filters": "None",
+            "dependencyOnHost": "None"
+          },
+          "other": {
+            "relative": "None",
+            "conditionalLogic": "None",
+            "notes": "Main instructions",
+            "privacy": "Private"
+          }
+        }
+      },
+      {
+        "name": "Session Date",
+        "type": "Metadata",
+        "dataType": "Date",
+        "format": "MM/DD/YYYY",
+        "required": true,
+        "description": "e.g., 01/02/2026",
+        "guide": {
+          "general": {
+            "potentialValues": "Date",
+            "valueSource": "System",
+            "isRequired": "Yes"
+          },
+          "mcsfd": {
+            "mechanics": "Date display",
+            "cardinality": "1 per session",
+            "sorts": "Chronological",
+            "filters": "Date Range",
+            "dependencyOnHost": "Plan Schedule"
+          },
+          "other": {
+            "relative": "None",
+            "conditionalLogic": "None",
+            "notes": "Scheduled date",
+            "privacy": "Private"
+          }
+        }
+      },
+      {
+        "name": "Run Type",
+        "type": "Metadata",
+        "dataType": "String",
+        "format": "Enum",
+        "required": true,
+        "description": "e.g., Easy run, Long run, Interval, Tempo",
+        "guide": {
+          "general": {
+            "potentialValues": "Easy, Long, Interval, Tempo, Recovery, Rest",
+            "valueSource": "System",
+            "isRequired": "Yes"
+          },
+          "mcsfd": {
+            "mechanics": "Tag/Badge",
+            "cardinality": "1 per session",
+            "sorts": "Type",
+            "filters": "Type",
+            "dependencyOnHost": "None"
+          },
+          "other": {
+            "relative": "None",
+            "conditionalLogic": "None",
+            "notes": "Categorization",
+            "privacy": "Private"
+          }
+        }
+      },
+      {
+        "name": "Approx. Total Distance",
+        "type": "Metadata",
+        "dataType": "String",
+        "format": "Distance",
+        "required": true,
+        "description": "e.g., 10 miles",
+        "guide": {
+          "general": {
+            "potentialValues": "0-100",
+            "valueSource": "System",
+            "isRequired": "Yes"
+          },
+          "mcsfd": {
+            "mechanics": "Number display",
+            "cardinality": "1 per session",
+            "sorts": "Distance",
+            "filters": "Distance Range",
+            "dependencyOnHost": "None"
+          },
+          "other": {
+            "relative": "None",
+            "conditionalLogic": "None",
+            "notes": "Planned volume",
+            "privacy": "Private"
+          }
+        }
+      },
+      {
+        "name": "Total Duration",
+        "type": "Metadata",
+        "dataType": "String",
+        "format": "Duration",
+        "required": true,
+        "description": "e.g., 60 minutes",
+        "guide": {
+          "general": {
+            "potentialValues": "0-300 min",
+            "valueSource": "System",
+            "isRequired": "Yes"
+          },
+          "mcsfd": {
+            "mechanics": "Time display",
+            "cardinality": "1 per session",
+            "sorts": "Duration",
+            "filters": "Duration Range",
+            "dependencyOnHost": "None"
+          },
+          "other": {
+            "relative": "None",
+            "conditionalLogic": "None",
+            "notes": "Planned time",
+            "privacy": "Private"
+          }
+        }
+      },
+      {
+        "name": "Intensity",
+        "type": "Metadata",
+        "dataType": "String",
+        "format": "Scale",
+        "required": true,
+        "description": "e.g., High end RPE 8/10",
+        "guide": {
+          "general": {
+            "potentialValues": "RPE 1-10",
+            "valueSource": "System",
+            "isRequired": "Yes"
+          },
+          "mcsfd": {
+            "mechanics": "Scale/Gauge",
+            "cardinality": "1 per session",
+            "sorts": "Intensity",
+            "filters": "Intensity",
+            "dependencyOnHost": "None"
+          },
+          "other": {
+            "relative": "None",
+            "conditionalLogic": "None",
+            "notes": "Effort level",
+            "privacy": "Private"
+          }
+        }
+      },
+      {
+        "name": "HR Zones",
+        "type": "Metadata",
+        "dataType": "String",
+        "format": "Range",
+        "required": true,
+        "description": "e.g., Zone 2-5",
+        "guide": {
+          "general": {
+            "potentialValues": "Zone 1-5",
+            "valueSource": "System",
+            "isRequired": "Yes"
+          },
+          "mcsfd": {
+            "mechanics": "Text/Badge",
+            "cardinality": "1 per session",
+            "sorts": "None",
+            "filters": "None",
+            "dependencyOnHost": "None"
+          },
+          "other": {
+            "relative": "None",
+            "conditionalLogic": "None",
+            "notes": "Physiological target",
+            "privacy": "Private"
+          }
+        }
+      },
+      {
+        "name": "Status",
+        "type": "Metadata",
+        "dataType": "String",
+        "format": "Enum",
+        "required": true,
+        "description": "e.g., Planned, Completed, Skipped",
+        "guide": {
+          "general": {
+            "potentialValues": "Planned, Completed, Skipped",
+            "valueSource": "System/User",
+            "isRequired": "Yes"
+          },
+          "mcsfd": {
+            "mechanics": "Status indicator",
+            "cardinality": "1 per session",
+            "sorts": "Status",
+            "filters": "Status",
+            "dependencyOnHost": "None"
+          },
+          "other": {
+            "relative": "None",
+            "conditionalLogic": "None",
+            "notes": "Execution state",
+            "privacy": "Private"
+          }
+        }
+      },
+      {
+        "name": "Actual Distance",
+        "type": "Metadata",
+        "dataType": "String",
+        "format": "Distance",
+        "required": false,
+        "description": "e.g., 3.1 miles",
+        "guide": {
+          "general": {
+            "potentialValues": "0-100",
+            "valueSource": "User Input",
+            "isRequired": "No"
+          },
+          "mcsfd": {
+            "mechanics": "Number input",
+            "cardinality": "1 per session",
+            "sorts": "None",
+            "filters": "None",
+            "dependencyOnHost": "None"
+          },
+          "other": {
+            "relative": "None",
+            "conditionalLogic": "None",
+            "notes": "Actuals",
+            "privacy": "Private"
+          }
+        }
+      },
+      {
+        "name": "Actual Duration",
+        "type": "Metadata",
+        "dataType": "String",
+        "format": "Duration",
+        "required": false,
+        "description": "e.g., 32:00",
+        "guide": {
+          "general": {
+            "potentialValues": "0-300 min",
+            "valueSource": "User Input",
+            "isRequired": "No"
+          },
+          "mcsfd": {
+            "mechanics": "Time input",
+            "cardinality": "1 per session",
+            "sorts": "None",
+            "filters": "None",
+            "dependencyOnHost": "None"
+          },
+          "other": {
+            "relative": "None",
+            "conditionalLogic": "None",
+            "notes": "Actuals",
+            "privacy": "Private"
+          }
+        }
+      }
+    ],
+    "ctas": [
+      {
+        "name": "Mark as complete",
+        "description": "Mark session as done",
+        "ctaSpec": {
+          "role": "User",
+          "userStory": "As a user, I want to mark a session as complete so that I can track my progress.",
+          "placement": [
+            "Card",
+            "Detail"
+          ],
+          "ixdNotes": "Toggles status to 'Completed'. Updates progress bar.",
+          "isPartOfFlow": false,
+          "location": "Prominent button on Session Card/Detail"
+        }
+      },
+      {
+        "name": "Skip session",
+        "description": "Skip this session",
+        "ctaSpec": {
+          "role": "User",
+          "userStory": "As a user, I want to skip a session if I'm sick or busy so that the app knows I didn't do it.",
+          "placement": [
+            "Card",
+            "Detail"
+          ],
+          "ixdNotes": "Toggles status to 'Skipped'.",
+          "isPartOfFlow": false,
+          "location": "Session menu"
+        }
+      },
+      {
+        "name": "Adjust session",
+        "description": "Modify session details",
+        "ctaSpec": {
+          "role": "User",
+          "userStory": "As a user, I want to adjust a session's distance or intensity if I need to modify the plan.",
+          "placement": [
+            "Detail"
+          ],
+          "ixdNotes": "Opens edit modal.",
+          "isPartOfFlow": false,
+          "location": "Session menu"
+        }
+      },
+      {
+        "name": "Add notes",
+        "description": "Add post-workout notes",
+        "ctaSpec": {
+          "role": "User",
+          "userStory": "As a user, I want to add notes about how I felt so that I can look back on my training.",
+          "placement": [
+            "Detail"
+          ],
+          "ixdNotes": "Opens text area.",
+          "isPartOfFlow": false,
+          "location": "Bottom of Session Detail"
+        }
+      }
+    ]
+  },
+  {
+    "objectName": "RACE",
+    "attributes": [
+      {
+        "name": "Race Name",
+        "type": "Core Content",
+        "dataType": "String",
+        "format": "Text",
+        "required": true,
+        "description": "e.g., Ogden Marathon",
+        "guide": {
+          "general": {
+            "potentialValues": "Any text",
+            "valueSource": "User Input",
+            "isRequired": "Yes"
+          },
+          "mcsfd": {
+            "mechanics": "Text field",
+            "cardinality": "1 per race",
+            "sorts": "Alphabetical",
+            "filters": "Search",
+            "dependencyOnHost": "None"
+          },
+          "other": {
+            "relative": "None",
+            "conditionalLogic": "None",
+            "notes": "Event title",
+            "privacy": "Private"
+          }
+        }
+      },
+      {
+        "name": "Race Date",
+        "type": "Metadata",
+        "dataType": "Date",
+        "format": "MM/DD/YYYY",
+        "required": true,
+        "description": "e.g., 05/20/2026",
+        "guide": {
+          "general": {
+            "potentialValues": "Date",
+            "valueSource": "User Input",
+            "isRequired": "Yes"
+          },
+          "mcsfd": {
+            "mechanics": "Date picker",
+            "cardinality": "1 per race",
+            "sorts": "Chronological",
+            "filters": "Date Range",
+            "dependencyOnHost": "None"
+          },
+          "other": {
+            "relative": "None",
+            "conditionalLogic": "None",
+            "notes": "Event date",
+            "privacy": "Private"
+          }
+        }
+      },
+      {
+        "name": "Countdown to Race",
+        "type": "Metadata",
+        "dataType": "String",
+        "format": "Duration",
+        "required": true,
+        "description": "e.g., 120 days",
+        "guide": {
+          "general": {
+            "potentialValues": "Integer (Days)",
+            "valueSource": "Calculated",
+            "isRequired": "Yes"
+          },
+          "mcsfd": {
+            "mechanics": "Read only",
+            "cardinality": "1 per race",
+            "sorts": "Numeric",
+            "filters": "None",
+            "dependencyOnHost": "Current Date"
+          },
+          "other": {
+            "relative": "None",
+            "conditionalLogic": "Race Date - Today",
+            "notes": "Urgency driver",
+            "privacy": "Private"
+          }
+        }
+      },
+      {
+        "name": "Race Time Goal",
+        "type": "Metadata",
+        "dataType": "String",
+        "format": "Time",
+        "required": true,
+        "description": "e.g., 04:00:00",
+        "guide": {
+          "general": {
+            "potentialValues": "HH:MM:SS",
+            "valueSource": "User Input",
+            "isRequired": "Yes"
+          },
+          "mcsfd": {
+            "mechanics": "Time picker",
+            "cardinality": "1 per race",
+            "sorts": "None",
+            "filters": "None",
+            "dependencyOnHost": "None"
+          },
+          "other": {
+            "relative": "None",
+            "conditionalLogic": "None",
+            "notes": "Target",
+            "privacy": "Private"
+          }
+        }
+      },
+      {
+        "name": "Race Completion Goal",
+        "type": "Metadata",
+        "dataType": "String",
+        "format": "Text",
+        "required": true,
+        "description": "e.g., I want to complete this race",
+        "guide": {
+          "general": {
+            "potentialValues": "Free text",
+            "valueSource": "User Input",
+            "isRequired": "Yes"
+          },
+          "mcsfd": {
+            "mechanics": "Text area",
+            "cardinality": "1 per race",
+            "sorts": "None",
+            "filters": "None",
+            "dependencyOnHost": "None"
+          },
+          "other": {
+            "relative": "None",
+            "conditionalLogic": "None",
+            "notes": "Qualitative goal",
+            "privacy": "Private"
+          }
+        }
+      },
+      {
+        "name": "Distance",
+        "type": "Metadata",
+        "dataType": "String",
+        "format": "Distance",
+        "required": true,
+        "description": "e.g., 26.2 miles",
+        "guide": {
+          "general": {
+            "potentialValues": "5k, 10k, Half, Full, Ultra",
+            "valueSource": "User Input",
+            "isRequired": "Yes"
+          },
+          "mcsfd": {
+            "mechanics": "Dropdown",
+            "cardinality": "1 per race",
+            "sorts": "Distance",
+            "filters": "Distance Type",
+            "dependencyOnHost": "None"
+          },
+          "other": {
+            "relative": "None",
+            "conditionalLogic": "None",
+            "notes": "Event type",
+            "privacy": "Private"
+          }
+        }
+      },
+      {
+        "name": "Location",
+        "type": "Metadata",
+        "dataType": "String",
+        "format": "Text",
+        "required": false,
+        "description": "e.g., Ogden, UT",
+        "guide": {
+          "general": {
+            "potentialValues": "Any text",
+            "valueSource": "User Input",
+            "isRequired": "No"
+          },
+          "mcsfd": {
+            "mechanics": "Text field",
+            "cardinality": "1 per race",
+            "sorts": "Alphabetical",
+            "filters": "Location",
+            "dependencyOnHost": "None"
+          },
+          "other": {
+            "relative": "None",
+            "conditionalLogic": "None",
+            "notes": "Venue",
+            "privacy": "Private"
+          }
+        }
+      }
+    ],
+    "ctas": [
+      {
+        "name": "Add race",
+        "description": "Add a new race",
+        "ctaSpec": {
+          "role": "User",
+          "userStory": "As a user, I want to add a race to my calendar so that I can build a training plan around it.",
+          "placement": [
+            "List"
+          ],
+          "ixdNotes": "Opens race creation form.",
+          "isPartOfFlow": true,
+          "location": "Top right of Races list"
+        }
+      },
+      {
+        "name": "Edit Race goal",
+        "description": "Update race goals",
+        "ctaSpec": {
+          "role": "User",
+          "userStory": "As a user, I want to update my race goal if my training is going better or worse than expected.",
+          "placement": [
+            "Detail"
+          ],
+          "ixdNotes": "Opens goal edit modal.",
+          "isPartOfFlow": false,
+          "location": "Race Detail page"
+        }
+      },
+      {
+        "name": "Log race result",
+        "description": "Enter finish time",
+        "ctaSpec": {
+          "role": "User",
+          "userStory": "As a user, I want to log my finish time after the race so that I can close out the training cycle.",
+          "placement": [
+            "Detail"
+          ],
+          "ixdNotes": "Opens result form. Marks race as completed.",
+          "isPartOfFlow": false,
+          "location": "Race Detail page (active on/after race date)"
+        }
+      },
+      {
+        "name": "Remove race",
+        "description": "Delete race",
+        "ctaSpec": {
+          "role": "User",
+          "userStory": "As a user, I want to remove a race if I decide not to run it.",
+          "placement": [
+            "Detail"
+          ],
+          "ixdNotes": "Requires confirmation.",
+          "isPartOfFlow": false,
+          "location": "Race settings"
+        }
+      }
+    ]
+  }
+]
