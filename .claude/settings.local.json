@@ -82,7 +82,8 @@
       "Bash(gcloud projects list:*)",
       "Bash(git pull:*)",
       "Bash(npm run build-storybook:*)",
-      "Bash(pkill:*)"
+      "Bash(pkill:*)",
+      "Bash(ls:*)"
     ]
   }
 }
