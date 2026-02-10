@@ -138,6 +138,10 @@ public class GeminiPlanGenerator : IAIPlanGenerator
             // JSON spec doesn't allow leading zeros except for the number 0 itself
             jsonText = SanitizeJsonNumbers(jsonText);
 
+            // Sanitize JSON: escape control characters (newlines, tabs, etc.) within strings
+            // Gemini sometimes returns literal newlines in string values which break JSON parsing
+            jsonText = SanitizeJsonControlCharacters(jsonText);
+
             // Auto-complete incomplete JSON (Gemini sometimes cuts off before finishing)
             jsonText = CompleteIncompleteJson(jsonText);
 
@@ -263,6 +267,9 @@ public class GeminiPlanGenerator : IAIPlanGenerator
 
             // Sanitize JSON: fix leading zeros in numeric values
             jsonText = SanitizeJsonNumbers(jsonText);
+
+            // Sanitize JSON: escape control characters within strings
+            jsonText = SanitizeJsonControlCharacters(jsonText);
 
             // Auto-complete incomplete JSON
             jsonText = CompleteIncompleteJson(jsonText);
@@ -638,6 +645,143 @@ Based on the pattern above, adjust the next {request.SessionsToRecalculate} sess
         }
 
         return summary.ToString();
+    }
+
+    private string BuildRecalculationSummaryPrompt(PlanRecalculationRequest request)
+    {
+        // Calculate performance stats
+        var skippedCount = request.RecentSessions.Count(s => s.IsSkipped);
+        var modifiedCount = request.RecentSessions.Count(s => s.WasModified);
+        var completedAsPlanned = request.RecentSessions.Count - skippedCount - modifiedCount;
+
+        var avgRPE = request.RecentSessions
+            .Where(s => s.RPE.HasValue && !s.IsSkipped)
+            .Select(s => s.RPE!.Value)
+            .DefaultIfEmpty(0)
+            .Average();
+
+        // Determine performance pattern
+        var performancePattern = modifiedCount > 0
+            ? (request.RecentSessions.Where(s => !s.IsSkipped && s.ActualDistance.HasValue && s.PlannedDistance.HasValue)
+                .Average(s => s.ActualDistance!.Value) >
+               request.RecentSessions.Where(s => !s.IsSkipped && s.ActualDistance.HasValue && s.PlannedDistance.HasValue)
+                .Average(s => s.PlannedDistance!.Value)
+                ? "overperforming" : "underperforming")
+            : (skippedCount > 0 ? "inconsistent" : "on-track");
+
+        // Get upcoming cycle phase if available
+        var upcomingPhase = request.UpdatedCyclePhases != null && request.UpdatedCyclePhases.Any()
+            ? $"You're entering your {request.UpdatedCyclePhases.First().Value} phase."
+            : "";
+
+        var daysUntilRace = (request.RaceDate - DateTime.UtcNow.Date).Days;
+
+    /// <summary>
+    /// Sanitizes JSON by escaping control characters (newlines, tabs, etc.) within string values.
+    /// Gemini sometimes returns strings with literal newlines which violate JSON spec.
+    /// JSON requires control characters to be escaped (e.g., \n, \t, \r).
+    /// </summary>
+    private static string SanitizeJsonControlCharacters(string json)
+    {
+        var result = new StringBuilder(json.Length);
+        bool inString = false;
+        bool escaped = false;
+
+        for (int i = 0; i < json.Length; i++)
+        {
+            char c = json[i];
+
+            if (escaped)
+            {
+                // Previous char was backslash, this is an escape sequence
+                result.Append(c);
+                escaped = false;
+                continue;
+            }
+
+            if (c == '\\' && inString)
+            {
+                // Start of escape sequence
+                result.Append(c);
+                escaped = true;
+                continue;
+            }
+
+            if (c == '"')
+            {
+                inString = !inString;
+                result.Append(c);
+                continue;
+            }
+
+            if (inString)
+            {
+                // Inside a string - escape control characters
+                switch (c)
+                {
+                    case '\n':
+                        result.Append("\\n");
+                        break;
+                    case '\r':
+                        result.Append("\\r");
+                        break;
+                    case '\t':
+                        result.Append("\\t");
+                        break;
+                    case '\b':
+                        result.Append("\\b");
+                        break;
+                    case '\f':
+                        result.Append("\\f");
+                        break;
+                    default:
+                        // Escape other control characters (0x00-0x1F)
+                        if (c < 0x20)
+                        {
+                            result.Append($"\\u{(int)c:X4}");
+                        }
+                        else
+                        {
+                            result.Append(c);
+                        }
+                        break;
+                }
+            }
+            else
+            {
+                result.Append(c);
+            }
+        }
+
+        return result.ToString();
+    }
+
+    /// <summary>
+    /// Sanitizes JSON by removing leading zeros from numeric values.
+    /// Gemini sometimes returns invalid JSON with numbers like 01, 02, 00 which violate JSON spec.
+    /// This regex finds patterns like ": 01" or ": 00" and converts them to ": 1" and ": 0".
+    /// </summary>
+    private static string SanitizeJsonNumbers(string json)
+    {
+        // Match numeric values with leading zeros: ": 0[0-9]" followed by delimiter (comma, newline, brace, etc.)
+        // Examples: ": 01," -> ": 1,", ": 00\n" -> ": 0\n", ": 02}" -> ": 2}"
+        var pattern = @":\s*0(\d+)([,\s\}])";
+        var sanitized = Regex.Replace(json, pattern, match =>
+        {
+            var numberWithoutLeadingZero = match.Groups[1].Value;
+            var delimiter = match.Groups[2].Value;
+
+            // If the number is all zeros (e.g., "00" -> "0"), use "0"
+            if (long.TryParse(numberWithoutLeadingZero, out var num))
+            {
+                return $": {num}{delimiter}";
+            }
+
+            // Fallback: just remove the leading zero
+            return $": {numberWithoutLeadingZero}{delimiter}";
+        });
+
+        return sanitized;
     }
 
     private string BuildRecalculationSummaryPrompt(PlanRecalculationRequest request)

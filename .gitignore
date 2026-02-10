@@ -451,3 +451,4 @@ backend/src/HerPace.API/obj/Debug/net8.0/.NETCoreApp,Version=v8.0.AssemblyAttrib
 backend/src/HerPace.Core/bin/Debug/net8.0/HerPace.Core.deps.json
 backend/src/HerPace.Core/bin/Debug/net8.0/HerPace.Core.dll
 backend/src/HerPace.Core/bin/Debug/net8.0/HerPace.Core.pdb
+backend/test-gemini-3.ps1
