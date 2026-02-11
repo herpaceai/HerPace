@@ -83,7 +83,25 @@
       "Bash(git pull:*)",
       "Bash(npm run build-storybook:*)",
       "Bash(pkill:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(powershell.exe -Command \".specify/scripts/powershell/create-new-feature.ps1 -Json -Number 1 -ShortName ''android-app'' ''I want to implement HerPace functionality in a brand new Android app using Kotlin.  It should implement the core functionality but needs to be re-designed for mobile/android.   It can reuse the backend.  We will want to implement a notification system \\(ideally cross platform if doable\\).''\")",
+      "Bash(powershell.exe:*)",
+      "WebSearch",
+      "Bash(pwsh:*)",
+      "Bash(test:*)",
+      "Bash(gradle:*)",
+      "Bash(chmod:*)",
+      "Bash(python:*)",
+      "Bash(pip install:*)",
+      "Bash(.gradlew.bat assembleDebug:*)",
+      "Bash(./gradlew.bat assembleDebug:*)",
+      "Bash(where:*)",
+      "Bash(java -version:*)",
+      "Bash(\"/c/Program Files/Android/Android Studio/jbr/bin/java\" -version)",
+      "Bash(./gradlew.bat clean:*)",
+      "Bash(\"/c/Program Files/Microsoft/jdk-11.0.12.7-hotspot/bin/java\" -version)",
+      "Bash(\"/c/Program Files/Android/Android Studio/jbr/bin/jlink\" --version)",
+      "Bash(\"/c/Program Files/Android/Android Studio/jbr/bin/jlink\" --module-path \"/c/Users/alxse/.gradle/caches/transforms-3/48436383f280c01a1bb8bab228f3e861/transformed/output/temp/jmod\" --add-modules java.base --output \"/c/Users/alxse/.gradle/caches/transforms-3/48436383f280c01a1bb8bab228f3e861/transformed/output/jdkImage\" --disable-plugin system-modules)"
     ]
   }
 }

@@ -1,0 +1,168 @@
+package com.herpace.presentation.navigation
+
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.navigation.NavHostController
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
+import com.herpace.presentation.auth.LoginScreen
+import com.herpace.presentation.auth.OnboardingScreen
+import com.herpace.presentation.auth.SignupScreen
+import com.herpace.presentation.dashboard.DashboardScreen
+import com.herpace.presentation.plan.TrainingPlanScreen
+import com.herpace.presentation.races.AddEditRaceScreen
+import com.herpace.presentation.races.RacesListScreen
+import com.herpace.presentation.session.SessionDetailScreen
+
+@Composable
+fun NavGraph(
+    navController: NavHostController,
+    startDestination: String,
+    modifier: Modifier = Modifier
+) {
+    NavHost(
+        navController = navController,
+        startDestination = startDestination,
+        modifier = modifier
+    ) {
+        // Auth
+        composable(Screen.Login.route) {
+            LoginScreen(
+                onLoginSuccess = {
+                    navController.navigate(Screen.Dashboard.route) {
+                        popUpTo(Screen.Login.route) { inclusive = true }
+                    }
+                },
+                onNavigateToSignup = {
+                    navController.navigate(Screen.Signup.route)
+                }
+            )
+        }
+        composable(Screen.Signup.route) {
+            SignupScreen(
+                onSignupSuccess = {
+                    navController.navigate(Screen.Onboarding.route) {
+                        popUpTo(Screen.Signup.route) { inclusive = true }
+                    }
+                },
+                onNavigateToLogin = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        // Onboarding
+        composable(Screen.Onboarding.route) {
+            OnboardingScreen(
+                onOnboardingComplete = {
+                    navController.navigate(Screen.Dashboard.route) {
+                        popUpTo(Screen.Onboarding.route) { inclusive = true }
+                    }
+                }
+            )
+        }
+
+        // Main
+        composable(Screen.Dashboard.route) {
+            DashboardScreen(
+                onNavigateToRaces = {
+                    navController.navigate(Screen.Races.route)
+                },
+                onNavigateToTrainingPlan = {
+                    navController.navigate(Screen.TrainingPlan.createRoute())
+                }
+            )
+        }
+
+        // Races
+        composable(Screen.Races.route) {
+            RacesListScreen(
+                onNavigateToAddRace = {
+                    navController.navigate(Screen.CreateRace.route)
+                },
+                onNavigateToEditRace = { raceId ->
+                    navController.navigate(Screen.EditRace.createRoute(raceId))
+                },
+                onNavigateToGeneratePlan = { raceId ->
+                    navController.navigate(Screen.TrainingPlan.createRoute(raceId))
+                }
+            )
+        }
+        composable(Screen.CreateRace.route) {
+            AddEditRaceScreen(
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+        composable(
+            route = Screen.EditRace.route,
+            arguments = listOf(navArgument("raceId") { type = NavType.StringType })
+        ) {
+            AddEditRaceScreen(
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        // Training Plan
+        composable(
+            route = Screen.TrainingPlan.route,
+            arguments = listOf(
+                navArgument("raceId") {
+                    type = NavType.StringType
+                    nullable = true
+                    defaultValue = null
+                }
+            )
+        ) { backStackEntry ->
+            val raceId = backStackEntry.arguments?.getString("raceId")
+            TrainingPlanScreen(
+                onNavigateBack = { navController.popBackStack() },
+                raceId = raceId
+            )
+        }
+        composable(
+            route = Screen.PlanDetail.route,
+            arguments = listOf(navArgument("planId") { type = NavType.StringType })
+        ) {
+            // Placeholder until further detail view
+            PlaceholderScreen("Plan Detail")
+        }
+        composable(
+            route = Screen.SessionDetail.route,
+            arguments = listOf(navArgument("sessionId") { type = NavType.StringType })
+        ) {
+            SessionDetailScreen(
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        // Profile
+        composable(Screen.Profile.route) {
+            // Placeholder until US7
+            PlaceholderScreen("Profile")
+        }
+        composable(Screen.Settings.route) {
+            // Placeholder until US6
+            PlaceholderScreen("Settings")
+        }
+    }
+}
+
+@Composable
+private fun PlaceholderScreen(title: String) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.headlineMedium
+        )
+    }
+}
