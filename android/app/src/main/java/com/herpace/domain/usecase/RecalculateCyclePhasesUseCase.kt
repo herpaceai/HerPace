@@ -19,7 +19,7 @@ class RecalculateCyclePhasesUseCase @Inject constructor(
         val sessions = trainingSessionDao.getByPlanId(activePlan.id)
 
         for (session in sessions) {
-            val sessionDate = LocalDate.parse(session.date)
+            val sessionDate = session.date
             val newPhase = calculateCyclePhase(sessionDate, cycleLength, lastPeriodStartDate)
             trainingSessionDao.updateCyclePhase(session.id, newPhase.name)
         }

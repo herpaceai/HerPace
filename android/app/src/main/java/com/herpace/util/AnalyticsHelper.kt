@@ -7,67 +7,67 @@ import javax.inject.Singleton
 
 @Singleton
 class AnalyticsHelper @Inject constructor(
-    private val firebaseAnalytics: FirebaseAnalytics
+    private val firebaseAnalytics: FirebaseAnalytics?
 ) {
     fun logLogin(method: String = "email") {
-        firebaseAnalytics.logEvent(FirebaseAnalytics.Event.LOGIN) {
+        firebaseAnalytics?.logEvent(FirebaseAnalytics.Event.LOGIN) {
             param(FirebaseAnalytics.Param.METHOD, method)
         }
     }
 
     fun logSignup(method: String = "email") {
-        firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SIGN_UP) {
+        firebaseAnalytics?.logEvent(FirebaseAnalytics.Event.SIGN_UP) {
             param(FirebaseAnalytics.Param.METHOD, method)
         }
     }
 
     fun logOnboardingComplete() {
-        firebaseAnalytics.logEvent("onboarding_complete", null)
+        firebaseAnalytics?.logEvent("onboarding_complete", null)
     }
 
     fun logRaceCreated(distance: String) {
-        firebaseAnalytics.logEvent("race_created") {
+        firebaseAnalytics?.logEvent("race_created") {
             param("distance", distance)
         }
     }
 
     fun logPlanGenerated(raceId: String, totalWeeks: Int) {
-        firebaseAnalytics.logEvent("plan_generated") {
+        firebaseAnalytics?.logEvent("plan_generated") {
             param("race_id", raceId)
             param("total_weeks", totalWeeks.toLong())
         }
     }
 
     fun logSessionCompleted(workoutType: String) {
-        firebaseAnalytics.logEvent("session_completed") {
+        firebaseAnalytics?.logEvent("session_completed") {
             param("workout_type", workoutType)
         }
     }
 
     fun logWorkoutLogged() {
-        firebaseAnalytics.logEvent("workout_logged", null)
+        firebaseAnalytics?.logEvent("workout_logged", null)
     }
 
     fun logCycleDataUpdated() {
-        firebaseAnalytics.logEvent("cycle_data_updated", null)
+        firebaseAnalytics?.logEvent("cycle_data_updated", null)
     }
 
     fun logPeriodLogged() {
-        firebaseAnalytics.logEvent("period_logged", null)
+        firebaseAnalytics?.logEvent("period_logged", null)
     }
 
     fun logSyncTriggered() {
-        firebaseAnalytics.logEvent("sync_triggered", null)
+        firebaseAnalytics?.logEvent("sync_triggered", null)
     }
 
     fun logScreenView(screenName: String) {
-        firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
+        firebaseAnalytics?.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
             param(FirebaseAnalytics.Param.SCREEN_NAME, screenName)
         }
     }
 
     fun logError(source: String, errorType: String, message: String?) {
-        firebaseAnalytics.logEvent("app_error") {
+        firebaseAnalytics?.logEvent("app_error") {
             param("source", source)
             param("error_type", errorType)
             if (message != null) {

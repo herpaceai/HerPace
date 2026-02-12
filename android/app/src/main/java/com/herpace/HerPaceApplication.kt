@@ -2,6 +2,7 @@ package com.herpace
 
 import android.app.Application
 import android.util.Log
+import com.google.firebase.FirebaseApp
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.hilt.android.HiltAndroidApp
 
@@ -11,16 +12,41 @@ class HerPaceApplication : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        // Disable Crashlytics collection in debug builds
-        FirebaseCrashlytics.getInstance()
-            .setCrashlyticsCollectionEnabled(!BuildConfig.DEBUG)
+        if (initializeFirebase()) {
+            FirebaseCrashlytics.getInstance()
+                .setCrashlyticsCollectionEnabled(!BuildConfig.DEBUG)
 
-        // Set global uncaught exception handler to record to Crashlytics
-        val defaultHandler = Thread.getDefaultUncaughtExceptionHandler()
-        Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
-            Log.e("HerPace", "Uncaught exception", throwable)
-            FirebaseCrashlytics.getInstance().recordException(throwable)
-            defaultHandler?.uncaughtException(thread, throwable)
+            val defaultHandler = Thread.getDefaultUncaughtExceptionHandler()
+            Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
+                Log.e("HerPace", "Uncaught exception", throwable)
+                try {
+                    FirebaseCrashlytics.getInstance().recordException(throwable)
+                } catch (_: Exception) { }
+                defaultHandler?.uncaughtException(thread, throwable)
+            }
+        }
+    }
+
+    private fun initializeFirebase(): Boolean {
+        return try {
+            FirebaseApp.initializeApp(this)
+            FirebaseApp.getInstance()
+            Log.d("HerPace", "Firebase initialized successfully")
+            true
+        } catch (e: Exception) {
+            Log.w("HerPace", "Firebase not available (missing or invalid google-services.json): ${e.message}")
+            false
+        }
+    }
+
+    companion object {
+        fun isFirebaseAvailable(): Boolean {
+            return try {
+                FirebaseApp.getInstance()
+                true
+            } catch (_: Exception) {
+                false
+            }
         }
     }
 }

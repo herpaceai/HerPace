@@ -4,8 +4,15 @@ plugins {
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.ksp)
     alias(libs.plugins.kotlin.serialization)
-    alias(libs.plugins.google.services)
-    alias(libs.plugins.firebase.crashlytics.gradle)
+}
+
+// Only apply Firebase plugins when a real google-services.json is present
+val googleServicesFile = file("google-services.json")
+val hasValidFirebaseConfig = googleServicesFile.exists() &&
+    !googleServicesFile.readText().contains("REPLACE_WITH")
+if (hasValidFirebaseConfig) {
+    apply(plugin = "com.google.gms.google-services")
+    apply(plugin = "com.google.firebase.crashlytics")
 }
 
 android {
