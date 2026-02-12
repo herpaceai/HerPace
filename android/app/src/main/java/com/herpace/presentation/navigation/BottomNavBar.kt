@@ -4,6 +4,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.DirectionsRun
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -29,7 +30,8 @@ val bottomNavItems = listOf(
         icon = Icons.Default.CalendarMonth,
         route = Screen.TrainingPlan.route,
         navigationRoute = Screen.TrainingPlan.createRoute()
-    )
+    ),
+    BottomNavItem("Profile", Icons.Default.Person, Screen.Profile.route)
 )
 
 @Composable

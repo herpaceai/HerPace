@@ -1,5 +1,6 @@
 package com.herpace.data.repository
 
+import com.herpace.data.local.SyncStatus
 import com.herpace.data.local.dao.RaceDao
 import com.herpace.data.local.entity.RaceEntity
 import com.herpace.data.remote.ApiResult
@@ -7,6 +8,8 @@ import com.herpace.data.remote.HerPaceApiService
 import com.herpace.data.remote.dto.CreateRaceRequest
 import com.herpace.data.remote.dto.RaceResponse
 import com.herpace.data.remote.safeApiCall
+import com.herpace.data.remote.safeApiCallWithRetry
+import com.herpace.data.sync.SyncManager
 import com.herpace.domain.model.Race
 import com.herpace.domain.model.RaceDistance
 import com.herpace.domain.repository.RaceRepository
@@ -14,6 +17,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.time.Instant
 import java.time.LocalDate
+import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -21,7 +25,8 @@ import javax.inject.Singleton
 class RaceRepositoryImpl @Inject constructor(
     private val apiService: HerPaceApiService,
     private val raceDao: RaceDao,
-    private val authTokenProvider: AuthTokenProvider
+    private val authTokenProvider: AuthTokenProvider,
+    private val syncManager: SyncManager
 ) : RaceRepository {
 
     override suspend fun createRace(
@@ -47,16 +52,46 @@ class RaceRepositoryImpl @Inject constructor(
         return when (result) {
             is ApiResult.Success -> {
                 val race = mapResponseToDomain(result.data)
-                raceDao.insert(RaceEntity.fromDomain(race))
+                raceDao.insert(RaceEntity.fromDomain(race, SyncStatus.SYNCED))
                 ApiResult.Success(race)
             }
-            is ApiResult.Error -> result
-            is ApiResult.NetworkError -> result
+            is ApiResult.Error -> {
+                // Save locally as NOT_SYNCED for later sync
+                val localRace = Race(
+                    id = UUID.randomUUID().toString(),
+                    userId = authTokenProvider.getUserId() ?: "",
+                    name = name,
+                    date = LocalDate.parse(date),
+                    distance = RaceDistance.fromApiValue(distance),
+                    goalTimeMinutes = goalTimeMinutes,
+                    createdAt = Instant.now(),
+                    updatedAt = Instant.now()
+                )
+                raceDao.insert(RaceEntity.fromDomain(localRace, SyncStatus.NOT_SYNCED))
+                syncManager.requestImmediateSync()
+                ApiResult.Success(localRace)
+            }
+            is ApiResult.NetworkError -> {
+                // Save locally as NOT_SYNCED for later sync
+                val localRace = Race(
+                    id = UUID.randomUUID().toString(),
+                    userId = authTokenProvider.getUserId() ?: "",
+                    name = name,
+                    date = LocalDate.parse(date),
+                    distance = RaceDistance.fromApiValue(distance),
+                    goalTimeMinutes = goalTimeMinutes,
+                    createdAt = Instant.now(),
+                    updatedAt = Instant.now()
+                )
+                raceDao.insert(RaceEntity.fromDomain(localRace, SyncStatus.NOT_SYNCED))
+                syncManager.requestImmediateSync()
+                ApiResult.Success(localRace)
+            }
         }
     }
 
     override suspend fun getRaces(): ApiResult<List<Race>> {
-        val result = safeApiCall { apiService.getRaces() }
+        val result = safeApiCallWithRetry { apiService.getRaces() }
         return when (result) {
             is ApiResult.Success -> {
                 val races = result.data.map { mapResponseToDomain(it) }
@@ -80,7 +115,7 @@ class RaceRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getRaceById(raceId: String): ApiResult<Race?> {
-        val result = safeApiCall { apiService.getRace(raceId) }
+        val result = safeApiCallWithRetry { apiService.getRace(raceId) }
         return when (result) {
             is ApiResult.Success -> {
                 val race = mapResponseToDomain(result.data)
@@ -105,7 +140,7 @@ class RaceRepositoryImpl @Inject constructor(
         distance: String,
         goalTimeMinutes: Int?
     ): ApiResult<Race> {
-        // Backend doesn't support general race editing yet - update locally only
+        // Backend doesn't support general race editing yet - update locally with NOT_SYNCED
         val existing = raceDao.getById(raceId)
             ?: return ApiResult.Error(-1, "Race not found")
         val updated = existing.copy(
@@ -115,7 +150,8 @@ class RaceRepositoryImpl @Inject constructor(
             goalTimeMinutes = goalTimeMinutes,
             updatedAt = Instant.now()
         )
-        raceDao.insert(RaceEntity.fromDomain(updated.toDomain()))
+        raceDao.insert(RaceEntity.fromDomain(updated.toDomain(), SyncStatus.NOT_SYNCED))
+        syncManager.requestImmediateSync()
         return ApiResult.Success(updated.toDomain())
     }
 

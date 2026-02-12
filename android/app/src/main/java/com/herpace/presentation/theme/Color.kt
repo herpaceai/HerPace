@@ -42,8 +42,14 @@ val HerPaceErrorDark = Color(0xFFF2B8B5)
 val HerPaceBackgroundDark = Color(0xFF1C1B1F)
 val HerPaceSurfaceDark = Color(0xFF1C1B1F)
 
-// Cycle phase indicator colors
-val CycleMenstrual = Color(0xFFE57373)
-val CycleFollicular = Color(0xFF81C784)
-val CycleOvulatory = Color(0xFFFFB74D)
-val CycleLuteal = Color(0xFF64B5F6)
+// Cycle phase indicator colors - Light theme (WCAG AA 4.5:1 on white)
+val CycleMenstrual = Color(0xFFC62828)         // Red 800
+val CycleFollicular = Color(0xFF2E7D32)        // Green 800
+val CycleOvulatory = Color(0xFFBF360C)         // Deep Orange 900
+val CycleLuteal = Color(0xFF1565C0)            // Blue 800
+
+// Cycle phase indicator colors - Dark theme (WCAG AA 4.5:1 on dark)
+val CycleMenstrualDark = Color(0xFFEF9A9A)     // Red 200
+val CycleFollicularDark = Color(0xFFA5D6A7)    // Green 200
+val CycleOvulatoryDark = Color(0xFFFFCC80)     // Orange 200
+val CycleLutealDark = Color(0xFF90CAF9)        // Blue 200

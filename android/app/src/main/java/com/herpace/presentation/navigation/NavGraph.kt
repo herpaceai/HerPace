@@ -19,6 +19,9 @@ import com.herpace.presentation.dashboard.DashboardScreen
 import com.herpace.presentation.plan.TrainingPlanScreen
 import com.herpace.presentation.races.AddEditRaceScreen
 import com.herpace.presentation.races.RacesListScreen
+import com.herpace.presentation.profile.CycleTrackingScreen
+import com.herpace.presentation.profile.NotificationSettingsScreen
+import com.herpace.presentation.profile.ProfileScreen
 import com.herpace.presentation.session.SessionDetailScreen
 
 @Composable
@@ -77,6 +80,12 @@ fun NavGraph(
                 },
                 onNavigateToTrainingPlan = {
                     navController.navigate(Screen.TrainingPlan.createRoute())
+                },
+                onNavigateToSessionDetail = { sessionId ->
+                    navController.navigate(Screen.SessionDetail.createRoute(sessionId))
+                },
+                onNavigateToProfile = {
+                    navController.navigate(Screen.Profile.route)
                 }
             )
         }
@@ -123,6 +132,9 @@ fun NavGraph(
             val raceId = backStackEntry.arguments?.getString("raceId")
             TrainingPlanScreen(
                 onNavigateBack = { navController.popBackStack() },
+                onNavigateToSessionDetail = { sessionId ->
+                    navController.navigate(Screen.SessionDetail.createRoute(sessionId))
+                },
                 raceId = raceId
             )
         }
@@ -144,12 +156,34 @@ fun NavGraph(
 
         // Profile
         composable(Screen.Profile.route) {
-            // Placeholder until US7
-            PlaceholderScreen("Profile")
+            ProfileScreen(
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToCycleTracking = {
+                    navController.navigate(Screen.CycleTracking.route)
+                },
+                onNavigateToNotificationSettings = {
+                    navController.navigate(Screen.NotificationSettings.route)
+                },
+                onLogout = {
+                    navController.navigate(Screen.Login.route) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+            )
+        }
+        composable(Screen.CycleTracking.route) {
+            CycleTrackingScreen(
+                onNavigateBack = { navController.popBackStack() }
+            )
         }
         composable(Screen.Settings.route) {
-            // Placeholder until US6
+            // Placeholder - navigates to notification settings for now
             PlaceholderScreen("Settings")
+        }
+        composable(Screen.NotificationSettings.route) {
+            NotificationSettingsScreen(
+                onNavigateBack = { navController.popBackStack() }
+            )
         }
     }
 }

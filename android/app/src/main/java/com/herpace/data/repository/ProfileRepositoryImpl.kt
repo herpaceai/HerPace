@@ -1,5 +1,6 @@
 package com.herpace.data.repository
 
+import com.herpace.data.local.SyncStatus
 import com.herpace.data.local.dao.RunnerProfileDao
 import com.herpace.data.local.entity.RunnerProfileEntity
 import com.herpace.data.remote.ApiResult
@@ -7,6 +8,8 @@ import com.herpace.data.remote.HerPaceApiService
 import com.herpace.data.remote.dto.RunnerProfileRequest
 import com.herpace.data.remote.dto.RunnerProfileResponse
 import com.herpace.data.remote.safeApiCall
+import com.herpace.data.remote.safeApiCallWithRetry
+import com.herpace.data.sync.SyncManager
 import com.herpace.domain.model.FitnessLevel
 import com.herpace.domain.model.RunnerProfile
 import com.herpace.domain.repository.ProfileRepository
@@ -24,7 +27,8 @@ import javax.inject.Singleton
 class ProfileRepositoryImpl @Inject constructor(
     private val apiService: HerPaceApiService,
     private val runnerProfileDao: RunnerProfileDao,
-    private val authTokenProvider: AuthTokenProvider
+    private val authTokenProvider: AuthTokenProvider,
+    private val syncManager: SyncManager
 ) : ProfileRepository {
 
     override suspend fun saveProfile(profile: RunnerProfile): ApiResult<RunnerProfile> {
@@ -45,16 +49,26 @@ class ProfileRepositoryImpl @Inject constructor(
         return when (result) {
             is ApiResult.Success -> {
                 val savedProfile = mapResponseToDomain(result.data)
-                runnerProfileDao.insert(RunnerProfileEntity.fromDomain(savedProfile))
+                runnerProfileDao.insert(RunnerProfileEntity.fromDomain(savedProfile, SyncStatus.SYNCED))
                 ApiResult.Success(savedProfile)
             }
-            is ApiResult.Error -> result
-            is ApiResult.NetworkError -> result
+            is ApiResult.Error -> {
+                // Save locally as NOT_SYNCED for later sync
+                runnerProfileDao.insert(RunnerProfileEntity.fromDomain(profile, SyncStatus.NOT_SYNCED))
+                syncManager.requestImmediateSync()
+                ApiResult.Success(profile)
+            }
+            is ApiResult.NetworkError -> {
+                // Save locally as NOT_SYNCED for later sync
+                runnerProfileDao.insert(RunnerProfileEntity.fromDomain(profile, SyncStatus.NOT_SYNCED))
+                syncManager.requestImmediateSync()
+                ApiResult.Success(profile)
+            }
         }
     }
 
     override suspend fun getProfile(): ApiResult<RunnerProfile?> {
-        val result = safeApiCall { apiService.getProfile() }
+        val result = safeApiCallWithRetry { apiService.getProfile() }
 
         return when (result) {
             is ApiResult.Success -> {

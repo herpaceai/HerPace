@@ -4,7 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.herpace.data.remote.ApiResult
 import com.herpace.domain.usecase.DeleteRaceUseCase
+import android.util.Log
 import com.herpace.domain.usecase.GetRacesUseCase
+import com.herpace.util.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,7 +18,8 @@ import javax.inject.Inject
 @HiltViewModel
 class RacesViewModel @Inject constructor(
     private val getRacesUseCase: GetRacesUseCase,
-    private val deleteRaceUseCase: DeleteRaceUseCase
+    private val deleteRaceUseCase: DeleteRaceUseCase,
+    private val analyticsHelper: AnalyticsHelper
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(RacesListUiState())
@@ -44,6 +47,8 @@ class RacesViewModel @Inject constructor(
                     _uiState.update { it.copy(isLoading = false) }
                 }
                 is ApiResult.Error -> {
+                    Log.w("RacesViewModel", "Failed to load races: ${result.message}")
+                    analyticsHelper.logError("races_load", "api_error", result.message)
                     _uiState.update {
                         it.copy(
                             isLoading = false,
@@ -52,6 +57,7 @@ class RacesViewModel @Inject constructor(
                     }
                 }
                 is ApiResult.NetworkError -> {
+                    Log.w("RacesViewModel", "Network error loading races")
                     _uiState.update {
                         it.copy(
                             isLoading = false,
@@ -70,11 +76,14 @@ class RacesViewModel @Inject constructor(
                     refreshRaces()
                 }
                 is ApiResult.Error -> {
+                    Log.w("RacesViewModel", "Failed to delete race: ${result.message}")
+                    analyticsHelper.logError("race_delete", "api_error", result.message)
                     _uiState.update {
                         it.copy(errorMessage = result.message ?: "Failed to delete race")
                     }
                 }
                 is ApiResult.NetworkError -> {
+                    analyticsHelper.logError("race_delete", "network_error", null)
                     _uiState.update {
                         it.copy(errorMessage = "Network error. Please try again.")
                     }

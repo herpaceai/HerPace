@@ -1,21 +1,32 @@
 package com.herpace
 
+import android.content.Intent
 import android.os.Bundle
-import androidx.activity.ComponentActivity
+import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.biometric.BiometricPrompt
+import androidx.fragment.app.FragmentActivity
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.herpace.data.remote.ApiResult
 import com.herpace.data.repository.AuthTokenProvider
+import com.herpace.data.sync.SyncManager
 import com.herpace.domain.repository.ProfileRepository
+import com.herpace.util.BiometricHelper
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.remember
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -30,7 +41,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class MainActivity : ComponentActivity() {
+class MainActivity : FragmentActivity() {
 
     @Inject
     lateinit var authTokenProvider: AuthTokenProvider
@@ -38,23 +49,56 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var profileRepository: ProfileRepository
 
+    @Inject
+    lateinit var syncManager: SyncManager
+
+    @Inject
+    lateinit var biometricHelper: BiometricHelper
+
     private var startDestination by mutableStateOf<String?>(null)
+    private var pendingSessionId: String? = null
+    private var navController: NavHostController? = null
+    private var isAuthenticated by mutableStateOf(true)
+    private var biometricCheckDone = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        // Check for deep link from notification
+        pendingSessionId = intent?.getStringExtra("sessionId")
 
         determineStartDestination()
 
         setContent {
             HerPaceTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                    if (!isAuthenticated) {
+                        Surface(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(innerPadding),
+                            color = MaterialTheme.colorScheme.background
+                        ) {
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = "Locked",
+                                    style = MaterialTheme.typography.headlineMedium,
+                                    color = MaterialTheme.colorScheme.onBackground
+                                )
+                            }
+                        }
+                    } else {
                     val destination = startDestination
                     if (destination == null) {
                         LoadingIndicator(modifier = Modifier.padding(innerPadding))
                     } else {
-                        val navController = rememberNavController()
-                        val navBackStackEntry by navController.currentBackStackEntryAsState()
+                        val navControllerInstance = rememberNavController()
+                        navController = navControllerInstance
+                        val navBackStackEntry by navControllerInstance.currentBackStackEntryAsState()
                         val showBottomBar by remember {
                             derivedStateOf {
                                 val currentRoute = navBackStackEntry?.destination?.route
@@ -66,20 +110,80 @@ class MainActivity : ComponentActivity() {
                             modifier = Modifier.padding(innerPadding),
                             bottomBar = {
                                 if (showBottomBar) {
-                                    BottomNavBar(navController = navController)
+                                    BottomNavBar(navController = navControllerInstance)
                                 }
                             }
                         ) { innerScaffoldPadding ->
                             NavGraph(
-                                navController = navController,
+                                navController = navControllerInstance,
                                 startDestination = destination,
                                 modifier = Modifier.padding(innerScaffoldPadding)
                             )
                         }
+
+                        // Navigate to session if opened from notification
+                        pendingSessionId?.let { sessionId ->
+                            pendingSessionId = null
+                            navControllerInstance.navigate(Screen.SessionDetail.createRoute(sessionId))
+                        }
                     }
+                    } // end authenticated else
                 }
             }
         }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        val sessionId = intent.getStringExtra("sessionId")
+        if (sessionId != null) {
+            navController?.navigate(Screen.SessionDetail.createRoute(sessionId))
+        }
+    }
+
+    /**
+     * T210: Trigger sync when app comes to foreground.
+     * onStart is called when the activity becomes visible to the user.
+     */
+    override fun onStart() {
+        super.onStart()
+        if (authTokenProvider.isLoggedIn()) {
+            Log.d("MainActivity", "App foregrounded, triggering sync")
+            syncManager.requestImmediateSync()
+
+            // Biometric lock check on app resume
+            if (biometricHelper.isBiometricLockEnabled() && !biometricCheckDone) {
+                isAuthenticated = false
+                promptBiometric()
+            }
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        // Reset so biometric is prompted again when returning
+        if (biometricHelper.isBiometricLockEnabled()) {
+            biometricCheckDone = false
+        }
+    }
+
+    private fun promptBiometric() {
+        biometricHelper.authenticate(
+            activity = this,
+            onSuccess = {
+                isAuthenticated = true
+                biometricCheckDone = true
+            },
+            onError = { errorCode, _ ->
+                // Allow access if biometric hardware is unavailable
+                if (errorCode == BiometricPrompt.ERROR_HW_UNAVAILABLE ||
+                    errorCode == BiometricPrompt.ERROR_NO_BIOMETRICS
+                ) {
+                    isAuthenticated = true
+                    biometricCheckDone = true
+                }
+            }
+        )
     }
 
     private fun determineStartDestination() {
@@ -87,6 +191,9 @@ class MainActivity : ComponentActivity() {
             startDestination = Screen.Login.route
             return
         }
+
+        // Schedule background sync when user is authenticated
+        syncManager.scheduleSyncWork()
 
         lifecycleScope.launch {
             val result = profileRepository.getProfile()

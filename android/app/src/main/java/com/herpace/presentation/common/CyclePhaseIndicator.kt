@@ -13,13 +13,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.herpace.domain.model.CyclePhase
 import com.herpace.presentation.theme.CycleFollicular
+import com.herpace.presentation.theme.CycleFollicularDark
 import com.herpace.presentation.theme.CycleLuteal
+import com.herpace.presentation.theme.CycleLutealDark
 import com.herpace.presentation.theme.CycleMenstrual
+import com.herpace.presentation.theme.CycleMenstrualDark
 import com.herpace.presentation.theme.CycleOvulatory
+import com.herpace.presentation.theme.CycleOvulatoryDark
 
 @Composable
 fun CyclePhaseIndicator(
@@ -30,7 +37,9 @@ fun CyclePhaseIndicator(
     val color = cyclePhase.toColor()
 
     Row(
-        modifier = modifier,
+        modifier = modifier.semantics {
+            contentDescription = "${cyclePhase.displayName} phase"
+        },
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(6.dp)
     ) {
@@ -50,9 +59,13 @@ fun CyclePhaseIndicator(
     }
 }
 
-fun CyclePhase.toColor(): Color = when (this) {
-    CyclePhase.MENSTRUAL -> CycleMenstrual
-    CyclePhase.FOLLICULAR -> CycleFollicular
-    CyclePhase.OVULATORY -> CycleOvulatory
-    CyclePhase.LUTEAL -> CycleLuteal
+@Composable
+fun CyclePhase.toColor(): Color {
+    val isDark = isSystemInDarkTheme()
+    return when (this) {
+        CyclePhase.MENSTRUAL -> if (isDark) CycleMenstrualDark else CycleMenstrual
+        CyclePhase.FOLLICULAR -> if (isDark) CycleFollicularDark else CycleFollicular
+        CyclePhase.OVULATORY -> if (isDark) CycleOvulatoryDark else CycleOvulatory
+        CyclePhase.LUTEAL -> if (isDark) CycleLutealDark else CycleLuteal
+    }
 }

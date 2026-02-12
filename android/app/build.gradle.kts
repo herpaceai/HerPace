@@ -4,6 +4,8 @@ plugins {
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.ksp)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.google.services)
+    alias(libs.plugins.firebase.crashlytics.gradle)
 }
 
 android {
@@ -114,8 +116,17 @@ dependencies {
     // WorkManager (Background Tasks)
     implementation(libs.androidx.work.runtime.ktx)
 
+    // Firebase
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.messaging)
+    implementation(libs.firebase.crashlytics)
+    implementation(libs.firebase.analytics)
+
     // Security (Encrypted SharedPreferences)
     implementation(libs.androidx.security.crypto)
+
+    // Biometric Authentication
+    implementation(libs.androidx.biometric)
 
     // Health Connect (Google Fit replacement)
     implementation(libs.androidx.health.connect)

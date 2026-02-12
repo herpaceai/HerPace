@@ -25,4 +25,13 @@ interface RunnerProfileDao {
 
     @Query("DELETE FROM runner_profiles WHERE userId = :userId")
     suspend fun deleteByUserId(userId: String)
+
+    @Query("SELECT * FROM runner_profiles WHERE syncStatus = :syncStatus")
+    suspend fun getBySyncStatus(syncStatus: String): List<RunnerProfileEntity>
+
+    @Query("UPDATE runner_profiles SET syncStatus = :syncStatus WHERE userId = :userId")
+    suspend fun updateSyncStatus(userId: String, syncStatus: String)
+
+    @Query("SELECT COUNT(*) FROM runner_profiles WHERE syncStatus = :syncStatus")
+    suspend fun countBySyncStatus(syncStatus: String): Int
 }

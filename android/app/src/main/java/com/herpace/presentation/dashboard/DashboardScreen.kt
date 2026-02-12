@@ -1,5 +1,6 @@
 package com.herpace.presentation.dashboard
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,19 +12,27 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -32,6 +41,8 @@ import com.herpace.domain.model.TrainingPlan
 import com.herpace.presentation.common.ErrorMessage
 import com.herpace.presentation.common.HerPaceButton
 import com.herpace.presentation.common.LoadingIndicator
+import java.time.Instant
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -39,40 +50,102 @@ import java.time.format.DateTimeFormatter
 fun DashboardScreen(
     onNavigateToRaces: () -> Unit,
     onNavigateToTrainingPlan: () -> Unit,
+    onNavigateToSessionDetail: (String) -> Unit = {},
+    onNavigateToProfile: () -> Unit = {},
     viewModel: DashboardViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    // T208: Show snackbar when sync conflicts were resolved
+    LaunchedEffect(uiState.syncConflictsResolved) {
+        if (uiState.syncConflictsResolved > 0) {
+            snackbarHostState.showSnackbar(
+                "${uiState.syncConflictsResolved} local change(s) replaced with server data"
+            )
+            viewModel.dismissSyncConflictNotification()
+        }
+    }
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("HerPace") }
             )
-        }
+        },
+        snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { paddingValues ->
-        Box(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            when {
-                uiState.isLoading -> {
-                    LoadingIndicator()
-                }
-                uiState.errorMessage != null && uiState.activePlan == null -> {
-                    ErrorMessage(
-                        message = uiState.errorMessage!!,
-                        onRetry = viewModel::loadDashboard
-                    )
-                }
-                else -> {
-                    DashboardContent(
-                        uiState = uiState,
-                        onNavigateToRaces = onNavigateToRaces,
-                        onNavigateToTrainingPlan = onNavigateToTrainingPlan
+            // T209: Offline indicator banner
+            if (uiState.isOffline) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(MaterialTheme.colorScheme.errorContainer)
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "You're offline. Some features may be limited.",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onErrorContainer
                     )
                 }
             }
+
+            Box(modifier = Modifier.weight(1f)) {
+                when {
+                    uiState.isLoading -> {
+                        LoadingIndicator()
+                    }
+                    uiState.errorMessage != null && uiState.activePlan == null -> {
+                        ErrorMessage(
+                            message = uiState.errorMessage!!,
+                            onRetry = viewModel::loadDashboard
+                        )
+                    }
+                    else -> {
+                        DashboardContent(
+                            uiState = uiState,
+                            onNavigateToRaces = onNavigateToRaces,
+                            onNavigateToTrainingPlan = onNavigateToTrainingPlan,
+                            onNavigateToSessionDetail = onNavigateToSessionDetail
+                        )
+                    }
+                }
+            }
+        }
+
+        // Gentle period reminder dialog
+        if (uiState.showPeriodReminder) {
+            AlertDialog(
+                onDismissRequest = viewModel::dismissPeriodReminder,
+                title = { Text("Update Your Cycle Info") },
+                text = {
+                    Text(
+                        "It's been ${uiState.daysSinceLastPeriod} days since you last " +
+                            "logged your period start. Keeping this up to date helps HerPace " +
+                            "optimize your training plan for your cycle."
+                    )
+                },
+                confirmButton = {
+                    Button(onClick = {
+                        viewModel.dismissPeriodReminder()
+                        onNavigateToProfile()
+                    }) {
+                        Text("Update Now")
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = viewModel::dismissPeriodReminder) {
+                        Text("Later")
+                    }
+                }
+            )
         }
     }
 }
@@ -81,7 +154,8 @@ fun DashboardScreen(
 private fun DashboardContent(
     uiState: DashboardUiState,
     onNavigateToRaces: () -> Unit,
-    onNavigateToTrainingPlan: () -> Unit
+    onNavigateToTrainingPlan: () -> Unit,
+    onNavigateToSessionDetail: (String) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -98,7 +172,10 @@ private fun DashboardContent(
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.height(8.dp))
-                TodayWorkoutCard(session = uiState.todaySession)
+                TodayWorkoutCard(
+                    session = uiState.todaySession,
+                    onClick = { onNavigateToSessionDetail(uiState.todaySession.id) }
+                )
             }
         } else if (uiState.activePlan != null) {
             NoWorkoutTodayCard()
@@ -118,7 +195,42 @@ private fun DashboardContent(
             onNavigateToRaces = onNavigateToRaces,
             onNavigateToTrainingPlan = onNavigateToTrainingPlan
         )
+
+        SyncStatusRow(
+            lastSyncTimeMillis = uiState.lastSyncTimeMillis,
+            pendingSyncCount = uiState.pendingSyncCount
+        )
     }
+}
+
+@Composable
+private fun SyncStatusRow(
+    lastSyncTimeMillis: Long?,
+    pendingSyncCount: Int
+) {
+    val syncText = if (lastSyncTimeMillis != null) {
+        val formatter = DateTimeFormatter.ofPattern("MMM d, h:mm a")
+        val syncTime = Instant.ofEpochMilli(lastSyncTimeMillis)
+            .atZone(ZoneId.systemDefault())
+            .toLocalDateTime()
+        "Last synced: ${syncTime.format(formatter)}"
+    } else {
+        "Not yet synced"
+    }
+
+    val pendingText = if (pendingSyncCount > 0) {
+        " | $pendingSyncCount pending"
+    } else {
+        ""
+    }
+
+    Text(
+        text = syncText + pendingText,
+        style = MaterialTheme.typography.labelSmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = Modifier.fillMaxWidth(),
+        textAlign = TextAlign.Center
+    )
 }
 
 @Composable
@@ -267,7 +379,9 @@ private fun QuickActionsRow(
         ) {
             Card(
                 onClick = onNavigateToRaces,
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.weight(1f).semantics {
+                    contentDescription = "My Races. Tap to view your races."
+                },
                 elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
             ) {
                 Column(
@@ -285,7 +399,9 @@ private fun QuickActionsRow(
             if (hasPlan) {
                 Card(
                     onClick = onNavigateToTrainingPlan,
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.weight(1f).semantics {
+                        contentDescription = "Full Plan. Tap to view your training plan."
+                    },
                     elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
                 ) {
                     Column(

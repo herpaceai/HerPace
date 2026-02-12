@@ -7,5 +7,11 @@ data class DashboardUiState(
     val todaySession: TrainingSession? = null,
     val activePlan: TrainingPlan? = null,
     val isLoading: Boolean = false,
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
+    val showPeriodReminder: Boolean = false,
+    val daysSinceLastPeriod: Int? = null,
+    val lastSyncTimeMillis: Long? = null,
+    val pendingSyncCount: Int = 0,
+    val syncConflictsResolved: Int = 0,
+    val isOffline: Boolean = false
 )

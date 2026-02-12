@@ -7,6 +7,7 @@ import com.herpace.domain.model.FitnessLevel
 import com.herpace.domain.model.RunnerProfile
 import com.herpace.domain.repository.AuthRepository
 import com.herpace.domain.usecase.SaveProfileUseCase
+import com.herpace.util.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,7 +21,8 @@ import javax.inject.Inject
 @HiltViewModel
 class OnboardingViewModel @Inject constructor(
     private val saveProfileUseCase: SaveProfileUseCase,
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val analyticsHelper: AnalyticsHelper
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(OnboardingUiState())
@@ -84,9 +86,11 @@ class OnboardingViewModel @Inject constructor(
             try {
                 when (val result = saveProfileUseCase(profile)) {
                     is ApiResult.Success -> {
+                        analyticsHelper.logOnboardingComplete()
                         _uiState.update { it.copy(isLoading = false, isSuccess = true) }
                     }
                     is ApiResult.Error -> {
+                        analyticsHelper.logError("onboarding", "api_error", result.message)
                         _uiState.update {
                             it.copy(
                                 isLoading = false,
@@ -95,6 +99,7 @@ class OnboardingViewModel @Inject constructor(
                         }
                     }
                     is ApiResult.NetworkError -> {
+                        analyticsHelper.logError("onboarding", "network_error", null)
                         _uiState.update {
                             it.copy(
                                 isLoading = false,
@@ -104,6 +109,7 @@ class OnboardingViewModel @Inject constructor(
                     }
                 }
             } catch (e: Exception) {
+                analyticsHelper.logError("onboarding", "exception", e.message)
                 _uiState.update {
                     it.copy(
                         isLoading = false,

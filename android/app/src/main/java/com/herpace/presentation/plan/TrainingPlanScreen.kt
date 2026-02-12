@@ -38,6 +38,7 @@ import com.herpace.presentation.common.LoadingIndicator
 @Composable
 fun TrainingPlanScreen(
     onNavigateBack: () -> Unit,
+    onNavigateToSessionDetail: (String) -> Unit = {},
     raceId: String? = null,
     viewModel: TrainingPlanViewModel = hiltViewModel()
 ) {
@@ -79,7 +80,8 @@ fun TrainingPlanScreen(
                 uiState.plan != null -> {
                     PlanContent(
                         uiState = uiState,
-                        onWeekSelected = viewModel::selectWeek
+                        onWeekSelected = viewModel::selectWeek,
+                        onSessionClick = onNavigateToSessionDetail
                     )
                 }
                 else -> {
@@ -128,7 +130,8 @@ private fun GeneratingPlanContent() {
 @Composable
 private fun PlanContent(
     uiState: TrainingPlanUiState,
-    onWeekSelected: (Int) -> Unit
+    onWeekSelected: (Int) -> Unit,
+    onSessionClick: (String) -> Unit
 ) {
     val plan = uiState.plan ?: return
     val totalWeeks = plan.totalWeeks
@@ -153,7 +156,8 @@ private fun PlanContent(
         item {
             WeekCard(
                 weekNumber = uiState.selectedWeek,
-                sessions = weekSessions
+                sessions = weekSessions,
+                onSessionClick = onSessionClick
             )
         }
     }
@@ -165,6 +169,7 @@ private fun PlanHeader(uiState: TrainingPlanUiState) {
     val totalSessions = plan.sessions.size
     val completedSessions = plan.sessions.count { it.completed }
     val totalDistance = plan.sessions.sumOf { it.distanceKm ?: 0.0 }
+    val progress = if (totalSessions > 0) completedSessions.toFloat() / totalSessions else 0f
 
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
@@ -187,6 +192,14 @@ private fun PlanHeader(uiState: TrainingPlanUiState) {
             style = MaterialTheme.typography.labelMedium,
             color = MaterialTheme.colorScheme.primary
         )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        LinearProgressIndicator(
+            progress = { progress },
+            modifier = Modifier.fillMaxWidth(),
+            trackColor = MaterialTheme.colorScheme.surfaceVariant,
+        )
     }
 }
 
@@ -199,7 +212,7 @@ private fun WeekSelector(
     LazyRow(
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        items(totalWeeks) { index ->
+        items(totalWeeks, key = { it }) { index ->
             val weekNumber = index + 1
             FilterChip(
                 selected = weekNumber == selectedWeek,

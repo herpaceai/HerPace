@@ -25,7 +25,13 @@ import java.time.LocalDate
             onDelete = ForeignKey.CASCADE
         )
     ],
-    indices = [Index("raceId"), Index("userId"), Index("isActive")]
+    indices = [
+        Index("raceId"),
+        Index("userId"),
+        Index("isActive"),
+        Index(value = ["userId", "isActive"]),
+        Index(value = ["raceId", "generatedAt"])
+    ]
 )
 data class TrainingPlanEntity(
     @PrimaryKey val id: String,

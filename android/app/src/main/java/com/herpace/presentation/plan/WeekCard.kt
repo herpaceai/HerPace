@@ -7,9 +7,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -56,14 +58,27 @@ fun WeekCard(
             }
         }
 
+        if (workoutCount > 0) {
+            Spacer(modifier = Modifier.height(4.dp))
+            LinearProgressIndicator(
+                progress = { completedCount.toFloat() / workoutCount },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 4.dp),
+                trackColor = MaterialTheme.colorScheme.surfaceVariant,
+            )
+        }
+
         Spacer(modifier = Modifier.height(8.dp))
 
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             sessions.forEach { session ->
-                SessionCard(
-                    session = session,
-                    onClick = { onSessionClick(session.id) }
-                )
+                key(session.id) {
+                    SessionCard(
+                        session = session,
+                        onClick = { onSessionClick(session.id) }
+                    )
+                }
             }
         }
     }

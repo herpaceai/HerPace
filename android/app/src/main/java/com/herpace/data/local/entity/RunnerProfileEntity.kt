@@ -21,7 +21,7 @@ import java.time.LocalTime
             onDelete = ForeignKey.CASCADE
         )
     ],
-    indices = [Index("userId")]
+    indices = [Index("userId"), Index("syncStatus")]
 )
 data class RunnerProfileEntity(
     @PrimaryKey val userId: String,
@@ -34,6 +34,7 @@ data class RunnerProfileEntity(
     val notificationsEnabled: Boolean,
     val reminderTimeMorning: LocalTime? = null,
     val reminderTimeEvening: LocalTime? = null,
+    val notificationScheduleId: String? = null,
     val lastUpdated: Instant,
     val syncStatus: SyncStatus = SyncStatus.SYNCED,
     val lastModified: Instant = Instant.now(),

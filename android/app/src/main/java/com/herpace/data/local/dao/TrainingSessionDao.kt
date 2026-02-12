@@ -37,6 +37,21 @@ interface TrainingSessionDao {
     @Query("UPDATE training_sessions SET completed = 1, completedAt = :completedAt WHERE id = :sessionId")
     suspend fun markCompleted(sessionId: String, completedAt: Long)
 
+    @Query("UPDATE training_sessions SET completed = 0, completedAt = NULL WHERE id = :sessionId")
+    suspend fun undoCompleted(sessionId: String)
+
+    @Query("UPDATE training_sessions SET cyclePhase = :cyclePhase WHERE id = :sessionId")
+    suspend fun updateCyclePhase(sessionId: String, cyclePhase: String)
+
     @Query("DELETE FROM training_sessions WHERE planId = :planId")
     suspend fun deleteByPlanId(planId: String)
+
+    @Query("SELECT * FROM training_sessions WHERE syncStatus = :syncStatus")
+    suspend fun getBySyncStatus(syncStatus: String): List<TrainingSessionEntity>
+
+    @Query("UPDATE training_sessions SET syncStatus = :syncStatus WHERE id = :sessionId")
+    suspend fun updateSyncStatus(sessionId: String, syncStatus: String)
+
+    @Query("SELECT COUNT(*) FROM training_sessions WHERE syncStatus = :syncStatus")
+    suspend fun countBySyncStatus(syncStatus: String): Int
 }

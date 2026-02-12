@@ -18,6 +18,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.herpace.domain.model.TrainingSession
@@ -32,9 +34,17 @@ fun TodayWorkoutCard(
 ) {
     val dateFormatter = DateTimeFormatter.ofPattern("EEEE, MMM d")
 
+    val cardDescription = buildString {
+        append("${session.workoutType.displayName} workout")
+        if (session.distanceKm != null) append(", ${String.format("%.1f", session.distanceKm)} km")
+        append(", ${session.intensityLevel.displayName} intensity")
+        if (session.completed) append(", completed")
+        append(". Tap for details.")
+    }
+
     Card(
         onClick = onClick,
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth().semantics { contentDescription = cardDescription },
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = if (session.completed) {
             CardDefaults.cardColors(
@@ -92,7 +102,7 @@ fun TodayWorkoutCard(
             ) {
                 Icon(
                     imageVector = Icons.Default.DirectionsRun,
-                    contentDescription = null,
+                    contentDescription = "Workout type",
                     tint = if (session.completed) {
                         MaterialTheme.colorScheme.onSurfaceVariant
                     } else {

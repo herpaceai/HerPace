@@ -7,7 +7,9 @@ import com.herpace.data.remote.ApiResult
 import com.herpace.domain.model.RaceDistance
 import com.herpace.domain.usecase.CreateRaceUseCase
 import com.herpace.domain.usecase.GetRaceByIdUseCase
+import android.util.Log
 import com.herpace.domain.usecase.UpdateRaceUseCase
+import com.herpace.util.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -22,6 +24,7 @@ class AddEditRaceViewModel @Inject constructor(
     private val createRaceUseCase: CreateRaceUseCase,
     private val updateRaceUseCase: UpdateRaceUseCase,
     private val getRaceByIdUseCase: GetRaceByIdUseCase,
+    private val analyticsHelper: AnalyticsHelper,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -128,14 +131,22 @@ class AddEditRaceViewModel @Inject constructor(
 
             when (result) {
                 is ApiResult.Success -> {
+                    if (raceId == null) {
+                        analyticsHelper.logRaceCreated(state.distance.name)
+                    }
                     _uiState.update { it.copy(isLoading = false, isSuccess = true) }
                 }
                 is ApiResult.Error -> {
+                    val action = if (raceId != null) "race_update" else "race_create"
+                    Log.w("AddEditRaceViewModel", "Failed to save race: ${result.message}")
+                    analyticsHelper.logError(action, "api_error", result.message)
                     _uiState.update {
                         it.copy(isLoading = false, errorMessage = result.message ?: "Failed to save race")
                     }
                 }
                 is ApiResult.NetworkError -> {
+                    val action = if (raceId != null) "race_update" else "race_create"
+                    analyticsHelper.logError(action, "network_error", null)
                     _uiState.update {
                         it.copy(isLoading = false, errorMessage = "Network error. Please try again.")
                     }

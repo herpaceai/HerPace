@@ -37,4 +37,13 @@ interface RaceDao {
 
     @Query("DELETE FROM races WHERE userId = :userId")
     suspend fun deleteAllByUserId(userId: String)
+
+    @Query("SELECT * FROM races WHERE syncStatus = :syncStatus")
+    suspend fun getBySyncStatus(syncStatus: String): List<RaceEntity>
+
+    @Query("UPDATE races SET syncStatus = :syncStatus WHERE id = :raceId")
+    suspend fun updateSyncStatus(raceId: String, syncStatus: String)
+
+    @Query("SELECT COUNT(*) FROM races WHERE syncStatus = :syncStatus")
+    suspend fun countBySyncStatus(syncStatus: String): Int
 }

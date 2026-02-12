@@ -20,6 +20,7 @@ work = "2.9.0"
 firebase-bom = "32.7.1"
 health-connect = "1.1.0-alpha07"
 security-crypto = "1.1.0-alpha06"
+biometric = "1.2.0-alpha05"
 sqlcipher = "4.5.4"
 sqlite = "2.4.0"
 junit = "4.13.2"
@@ -81,6 +82,7 @@ firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashly
 
 # Security
 androidx-security-crypto = { group = "androidx.security", name = "security-crypto", version.ref = "security-crypto" }
+androidx-biometric = { group = "androidx.biometric", name = "biometric", version.ref = "biometric" }
 
 # SQLCipher
 sqlcipher-android = { group = "net.zetetic", name = "android-database-sqlcipher", version.ref = "sqlcipher" }
@@ -103,3 +105,5 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+google-services = { id = "com.google.gms.google-services", version = "4.4.0" }
+firebase-crashlytics-gradle = { id = "com.google.firebase.crashlytics", version = "2.9.9" }

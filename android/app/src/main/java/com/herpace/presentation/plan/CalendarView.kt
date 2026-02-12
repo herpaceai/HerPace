@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -27,6 +28,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -188,7 +191,8 @@ private fun DayCell(
     hasSession: Boolean,
     isCompleted: Boolean,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    date: LocalDate? = null
 ) {
     val backgroundColor = when {
         isSelected -> MaterialTheme.colorScheme.primary
@@ -208,14 +212,25 @@ private fun DayCell(
         Modifier
     }
 
+    val dayDescription = buildString {
+        append("$day")
+        if (isToday) append(", today")
+        if (isSelected) append(", selected")
+        if (hasSession) {
+            if (isCompleted) append(", workout completed") else append(", has workout")
+        }
+    }
+
     Box(
         modifier = modifier
+            .defaultMinSize(minWidth = 48.dp, minHeight = 48.dp)
             .aspectRatio(1f)
             .padding(2.dp)
             .clip(CircleShape)
             .then(borderModifier)
             .background(backgroundColor, CircleShape)
-            .clickable(onClick = onClick),
+            .clickable(onClick = onClick)
+            .semantics { contentDescription = dayDescription },
         contentAlignment = Alignment.Center
     ) {
         Column(

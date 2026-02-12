@@ -1,5 +1,6 @@
 package com.herpace.data.repository
 
+import com.herpace.data.local.SyncStatus
 import com.herpace.data.local.dao.TrainingPlanDao
 import com.herpace.data.local.dao.TrainingSessionDao
 import com.herpace.data.local.entity.TrainingPlanEntity
@@ -11,6 +12,8 @@ import com.herpace.data.remote.dto.TrainingPlanDetailResponse
 import com.herpace.data.remote.dto.TrainingPlanResponse
 import com.herpace.data.remote.dto.TrainingSessionResponse
 import com.herpace.data.remote.safeApiCall
+import com.herpace.data.remote.safeApiCallWithRetry
+import com.herpace.data.sync.SyncManager
 import com.herpace.domain.model.CyclePhase
 import com.herpace.domain.model.IntensityLevel
 import com.herpace.domain.model.TrainingPlan
@@ -31,7 +34,8 @@ class TrainingPlanRepositoryImpl @Inject constructor(
     private val apiService: HerPaceApiService,
     private val trainingPlanDao: TrainingPlanDao,
     private val trainingSessionDao: TrainingSessionDao,
-    private val authTokenProvider: AuthTokenProvider
+    private val authTokenProvider: AuthTokenProvider,
+    private val syncManager: SyncManager
 ) : TrainingPlanRepository {
 
     override suspend fun generatePlan(raceId: String): ApiResult<TrainingPlan> {
@@ -67,7 +71,7 @@ class TrainingPlanRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getActivePlan(): ApiResult<TrainingPlan?> {
-        val result = safeApiCall { apiService.getActivePlan() }
+        val result = safeApiCallWithRetry { apiService.getActivePlan() }
         return when (result) {
             is ApiResult.Success -> {
                 if (result.data != null) {
@@ -125,6 +129,15 @@ class TrainingPlanRepositoryImpl @Inject constructor(
 
     override suspend fun markSessionCompleted(sessionId: String): ApiResult<Unit> {
         trainingSessionDao.markCompleted(sessionId, Instant.now().toEpochMilli())
+        trainingSessionDao.updateSyncStatus(sessionId, SyncStatus.NOT_SYNCED.name)
+        syncManager.requestImmediateSync()
+        return ApiResult.Success(Unit)
+    }
+
+    override suspend fun undoMarkSessionCompleted(sessionId: String): ApiResult<Unit> {
+        trainingSessionDao.undoCompleted(sessionId)
+        trainingSessionDao.updateSyncStatus(sessionId, SyncStatus.NOT_SYNCED.name)
+        syncManager.requestImmediateSync()
         return ApiResult.Success(Unit)
     }
 

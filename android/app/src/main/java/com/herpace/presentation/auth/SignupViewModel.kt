@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.herpace.data.remote.ApiResult
 import com.herpace.domain.usecase.SignupUseCase
+import com.herpace.util.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,7 +15,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SignupViewModel @Inject constructor(
-    private val signupUseCase: SignupUseCase
+    private val signupUseCase: SignupUseCase,
+    private val analyticsHelper: AnalyticsHelper
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AuthUiState())
@@ -43,9 +45,11 @@ class SignupViewModel @Inject constructor(
 
             when (val result = signupUseCase(state.email.trim(), state.password, state.confirmPassword)) {
                 is ApiResult.Success -> {
+                    analyticsHelper.logSignup()
                     _uiState.update { it.copy(isLoading = false, isSuccess = true) }
                 }
                 is ApiResult.Error -> {
+                    analyticsHelper.logError("signup", "api_error", result.message)
                     _uiState.update {
                         it.copy(
                             isLoading = false,
@@ -54,6 +58,7 @@ class SignupViewModel @Inject constructor(
                     }
                 }
                 is ApiResult.NetworkError -> {
+                    analyticsHelper.logError("signup", "network_error", null)
                     _uiState.update {
                         it.copy(
                             isLoading = false,

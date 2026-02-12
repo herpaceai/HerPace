@@ -48,6 +48,12 @@
 # Room
 -keep class * extends androidx.room.RoomDatabase
 -keep @androidx.room.Entity class *
+-keep @androidx.room.Dao class *
+-keepclassmembers class * {
+    @androidx.room.* <methods>;
+}
+-keep class * extends androidx.room.RoomDatabase$Callback
+-keep class * implements androidx.room.migration.Migration
 -dontwarn androidx.room.paging.**
 
 # Hilt
@@ -55,9 +61,33 @@
 -keep class javax.inject.** { *; }
 -keep class * extends dagger.hilt.android.internal.managers.ViewComponentManager$FragmentContextWrapper { *; }
 
+# Coroutines
+-keepnames class kotlinx.coroutines.internal.MainDispatcherFactory {}
+-keepnames class kotlinx.coroutines.CoroutineExceptionHandler {}
+-keepclassmembers class kotlinx.coroutines.** {
+    volatile <fields>;
+}
+
+# WorkManager
+-keep class * extends androidx.work.Worker
+-keep class * extends androidx.work.ListenableWorker {
+    public <init>(android.content.Context, androidx.work.WorkerParameters);
+}
+-keep class androidx.work.WorkerParameters
+
 # Firebase
 -keep class com.google.firebase.** { *; }
 -dontwarn com.google.firebase.**
 
 # Health Connect
 -keep class androidx.health.connect.** { *; }
+
+# App domain models (prevent obfuscation of API DTOs)
+-keep class com.herpace.data.remote.dto.** { *; }
+-keep class com.herpace.domain.model.** { *; }
+
+# Enums used in Room type converters
+-keepclassmembers enum com.herpace.** {
+    **[] $VALUES;
+    public *;
+}

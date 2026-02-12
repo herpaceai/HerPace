@@ -17,6 +17,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.herpace.domain.model.TrainingSession
@@ -35,9 +37,17 @@ fun SessionCard(
     val dateFormatter = DateTimeFormatter.ofPattern("MMM d")
     val dayName = session.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault())
 
+    val sessionDescription = buildString {
+        append("$dayName, ${session.date.format(dateFormatter)}")
+        append(". ${session.workoutType.displayName}")
+        if (session.distanceKm != null) append(", ${String.format("%.1f", session.distanceKm)} km")
+        if (session.completed) append(", completed")
+        append(". Tap for details.")
+    }
+
     Card(
         onClick = onClick,
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth().semantics { contentDescription = sessionDescription },
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
         colors = if (session.completed) {
             CardDefaults.cardColors(

@@ -11,6 +11,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import kotlinx.serialization.json.Json
+import okhttp3.CertificatePinner
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -35,7 +36,7 @@ object NetworkModule {
     fun provideOkHttpClient(
         authTokenProvider: AuthTokenProvider
     ): OkHttpClient {
-        return OkHttpClient.Builder()
+        val builder = OkHttpClient.Builder()
             .addInterceptor { chain ->
                 val request = chain.request().newBuilder()
                 val token = authTokenProvider.getToken()
@@ -56,7 +57,22 @@ object NetworkModule {
             .connectTimeout(30, TimeUnit.SECONDS)
             .readTimeout(4, TimeUnit.MINUTES)
             .writeTimeout(30, TimeUnit.SECONDS)
-            .build()
+
+        // Certificate pinning for production builds only
+        if (!BuildConfig.DEBUG) {
+            val certificatePinner = CertificatePinner.Builder()
+                // Google Cloud Run production API domain
+                // Pins against Google Trust Services root CAs
+                .add(
+                    "*.us-central1.run.app",
+                    "sha256/hxqRlPTu1bMS/0DITB1SSu0vd4u/8l8TjPgfaAp63Gc=", // GTS Root R1
+                    "sha256/Vfd95BwDeSQo+NUYxVEEIBvvpOs/uqXEoSRMAOVo7R0="  // GTS Root R2
+                )
+                .build()
+            builder.certificatePinner(certificatePinner)
+        }
+
+        return builder.build()
     }
 
     @Provides

@@ -574,32 +574,56 @@ If running the backend locally:
 
 ---
 
-## Next Steps
+## Implementation Notes
 
-1. **Implement Authentication Flow**:
-   - Create login/signup screens
-   - Implement AuthRepository with token storage
-   - Build LoginViewModel with StateFlow
+The following deviations from the original quickstart were made during implementation:
 
-2. **Set Up Room Database**:
-   - Define database class with TypeConverters
-   - Create DAOs for each entity
-   - Implement repository pattern
+### Build Configuration Differences
 
-3. **Build Onboarding Flow**:
-   - Profile input screen with form validation
-   - Cycle tracking data collection
-   - Navigation to dashboard on completion
+- **AGP version**: Using `8.3.2` (not `8.2.0`) for latest Compose compiler compatibility
+- **API Base URL**: Debug builds point to the production Cloud Run API (`https://herpace-api-330702404265.us-central1.run.app/`), not localhost. Change to `https://10.0.2.2:7001/` for local backend development.
+- **Read timeout**: Extended to 4 minutes (from 30s) to accommodate AI plan generation latency
+- **google-services plugin**: Added for Firebase integration (`com.google.gms.google-services`)
+- **Firebase Crashlytics plugin**: Added (`com.google.firebase.crashlytics`)
+- **Kotlin Compose plugin**: Using KSP-based compiler extension (`1.5.10`) instead of the `kotlin.plugin.compose` plugin
 
-4. **Test API Integration**:
-   - Call `/api/auth/signup` and `/api/auth/login`
-   - Store JWT token in EncryptedSharedPreferences
-   - Verify token is injected in subsequent API calls
+### Additional Dependencies (not in original quickstart)
 
-5. **Set Up Firebase (Optional for MVP)**:
-   - Create Firebase project
-   - Add `google-services.json` to `android/app/`
-   - Configure FCM for push notifications
+- `material-icons-extended` for comprehensive icon set
+- `lifecycle-runtime-ktx` for coroutine lifecycle support
+- `sqlcipher-android` + `sqlite-ktx` for database encryption
+- `firebase-crashlytics` + `firebase-analytics` for observability
+- `biometric` for optional app lock feature
+
+### Security Hardening
+
+- `allowBackup="false"` in AndroidManifest (prevents data extraction)
+- `networkSecurityConfig` added with cleartext traffic disabled and certificate pinning
+- SQLCipher key derived from Android Keystore (not hardcoded)
+- All SharedPreferences use `EncryptedSharedPreferences`
+- Certificate pinning enabled for production builds (GTS Root R1/R2)
+
+### Architecture Patterns
+
+- **Offline-first**: All repositories follow try-API-then-cache pattern for reads, local-save-and-sync for writes
+- **Background sync**: WorkManager-based hourly sync + on-demand sync via `SyncManager`
+- **Conflict resolution**: Server-wins strategy with user notification via `SyncManager.recordConflictsResolved()`
+- **Retry logic**: `safeApiCallWithRetry` with exponential backoff for GET operations (retries on 5xx, 429, network errors)
+
+---
+
+## Implemented Features
+
+All 8 user stories have been implemented:
+
+1. **Authentication**: Login, signup with JWT token storage in EncryptedSharedPreferences
+2. **Onboarding**: Profile creation with fitness level, cycle data, weekly mileage
+3. **Race Management**: Create, edit, delete races with offline support
+4. **AI Plan Generation**: Generate training plans via backend Gemini API
+5. **Daily Sessions**: Week-by-week and calendar views, session completion tracking
+6. **Workout Logging**: Log distance, duration, RPE, notes for completed sessions
+7. **Push Notifications**: FCM-based workout reminders with local scheduling
+8. **Profile & Cycle Tracking**: Update cycle data, recalculate phases, manual sync
 
 ---
 
@@ -610,17 +634,3 @@ If running the backend locally:
 - **Hilt Documentation**: https://developer.android.com/training/dependency-injection/hilt-android
 - **Retrofit Documentation**: https://square.github.io/retrofit/
 - **Room Documentation**: https://developer.android.com/training/data-storage/room
-
----
-
-## Summary
-
-You now have a fully configured Android project with:
-- ✅ Jetpack Compose for UI
-- ✅ Hilt for dependency injection
-- ✅ Retrofit for API calls
-- ✅ Room for local database (ready to configure)
-- ✅ WorkManager for background tasks
-- ✅ Build configuration for debug/release
-
-**Next**: Implement the authentication flow (User Story 1) to build the foundation for all other features.

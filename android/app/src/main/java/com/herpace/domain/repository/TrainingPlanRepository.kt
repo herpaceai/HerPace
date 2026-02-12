@@ -15,5 +15,6 @@ interface TrainingPlanRepository {
     fun observeSessionsByWeek(planId: String, weekNumber: Int): Flow<List<TrainingSession>>
     suspend fun getSessionById(sessionId: String): TrainingSession?
     suspend fun markSessionCompleted(sessionId: String): ApiResult<Unit>
+    suspend fun undoMarkSessionCompleted(sessionId: String): ApiResult<Unit>
     suspend fun getSessionsByDate(date: java.time.LocalDate): List<TrainingSession>
 }

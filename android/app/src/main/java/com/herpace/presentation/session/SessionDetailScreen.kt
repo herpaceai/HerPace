@@ -21,8 +21,10 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -34,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.herpace.domain.model.CyclePhase
 import com.herpace.domain.model.TrainingSession
+import com.herpace.domain.model.WorkoutLog
 import com.herpace.domain.model.WorkoutType
 import com.herpace.presentation.common.CyclePhaseIndicator
 import com.herpace.presentation.common.ErrorMessage
@@ -84,10 +87,24 @@ fun SessionDetailScreen(
                 uiState.session != null -> {
                     SessionDetailContent(
                         session = uiState.session!!,
+                        workoutLog = uiState.workoutLog,
                         isMarkingComplete = uiState.isMarkingComplete,
-                        onMarkCompleted = viewModel::markCompleted
+                        onMarkCompleted = viewModel::markCompleted,
+                        onUndoCompletion = viewModel::undoCompletion,
+                        onLogWorkout = viewModel::showLogWorkoutDialog
                     )
                 }
+            }
+
+            // Log Workout Dialog
+            if (uiState.showLogWorkoutDialog) {
+                LogWorkoutDialog(
+                    isLoading = uiState.isLoggingWorkout,
+                    onDismiss = viewModel::dismissLogWorkoutDialog,
+                    onSubmit = { distance, duration, effort, notes ->
+                        viewModel.logWorkoutDetails(distance, duration, effort, notes)
+                    }
+                )
             }
         }
     }
@@ -96,8 +113,11 @@ fun SessionDetailScreen(
 @Composable
 private fun SessionDetailContent(
     session: TrainingSession,
+    workoutLog: WorkoutLog?,
     isMarkingComplete: Boolean,
-    onMarkCompleted: () -> Unit
+    onMarkCompleted: () -> Unit,
+    onUndoCompletion: () -> Unit,
+    onLogWorkout: () -> Unit
 ) {
     val dateFormatter = DateTimeFormatter.ofPattern("EEEE, MMMM d, yyyy")
     val isRestDay = session.workoutType == WorkoutType.REST_DAY
@@ -146,7 +166,7 @@ private fun SessionDetailContent(
         ) {
             Icon(
                 imageVector = Icons.Default.DirectionsRun,
-                contentDescription = null,
+                contentDescription = "Workout type",
                 tint = MaterialTheme.colorScheme.primary
             )
             Text(
@@ -172,14 +192,41 @@ private fun SessionDetailContent(
             NotesCard(notes = session.notes)
         }
 
-        // Mark complete button
-        if (!session.completed && !isRestDay) {
+        // Workout log card (if logged)
+        if (workoutLog != null) {
+            WorkoutLogCard(log = workoutLog)
+        }
+
+        // Action buttons
+        if (!isRestDay) {
             Spacer(modifier = Modifier.height(8.dp))
-            HerPaceButton(
-                text = "Mark as Completed",
-                onClick = onMarkCompleted,
-                isLoading = isMarkingComplete
-            )
+
+            if (!session.completed) {
+                HerPaceButton(
+                    text = "Mark as Completed",
+                    onClick = onMarkCompleted,
+                    isLoading = isMarkingComplete
+                )
+            } else {
+                // Completed session actions
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    if (workoutLog == null) {
+                        HerPaceButton(
+                            text = "Log Workout Details",
+                            onClick = onLogWorkout
+                        )
+                    }
+                    OutlinedButton(
+                        onClick = onUndoCompletion,
+                        enabled = !isMarkingComplete,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(if (isMarkingComplete) "Undoing..." else "Undo Completion")
+                    }
+                }
+            }
         }
     }
 }
@@ -313,6 +360,57 @@ private fun NotesCard(notes: String) {
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
+        }
+    }
+}
+
+@Composable
+private fun WorkoutLogCard(log: WorkoutLog) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Text(
+                text = "Your Performance",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
+            )
+
+            if (log.actualDistanceKm > 0) {
+                DetailRow(
+                    label = "Actual Distance",
+                    value = "${String.format("%.1f", log.actualDistanceKm)} km"
+                )
+            }
+
+            if (log.actualDurationMinutes > 0) {
+                val hours = log.actualDurationMinutes / 60
+                val mins = log.actualDurationMinutes % 60
+                val durationText = if (hours > 0) "${hours}h ${mins}m" else "${mins}m"
+                DetailRow(label = "Duration", value = durationText)
+            }
+
+            DetailRow(
+                label = "Perceived Effort",
+                value = "${log.perceivedEffort}/10"
+            )
+
+            if (!log.notes.isNullOrBlank()) {
+                Text(
+                    text = log.notes,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
         }
     }
 }

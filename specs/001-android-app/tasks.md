@@ -283,9 +283,9 @@
 
 ### Navigation (User Story 4)
 
-- [ ] T137 [US4] Update NavGraph to include SessionDetail destination with sessionId parameter
-- [ ] T138 [US4] Add navigation from DashboardScreen to SessionDetailScreen when tapping today's workout
-- [ ] T139 [US4] Add navigation from TrainingPlanScreen SessionCard to SessionDetailScreen
+- [x] T137 [US4] Update NavGraph to include SessionDetail destination with sessionId parameter
+- [x] T138 [US4] Add navigation from DashboardScreen to SessionDetailScreen when tapping today's workout
+- [x] T139 [US4] Add navigation from TrainingPlanScreen SessionCard to SessionDetailScreen
 
 **Checkpoint**: User Story 4 complete - users can view daily training sessions with full details
 
@@ -299,32 +299,32 @@
 
 ### Domain Layer (User Story 5)
 
-- [ ] T140 [P] [US5] Create WorkoutLog domain model in android/app/src/main/java/com/herpace/domain/model/WorkoutLog.kt
-- [ ] T141 [P] [US5] Create WorkoutLogEntity (Room) with foreign key to TrainingSessionEntity in android/app/src/main/java/com/herpace/data/local/entity/WorkoutLogEntity.kt
+- [x] T140 [P] [US5] Create WorkoutLog domain model in android/app/src/main/java/com/herpace/domain/model/WorkoutLog.kt
+- [x] T141 [P] [US5] Create WorkoutLogEntity (Room) with foreign key to TrainingSessionEntity in android/app/src/main/java/com/herpace/data/local/entity/WorkoutLogEntity.kt
 
 ### Data Layer (User Story 5)
 
-- [ ] T142 [US5] Create WorkoutLogDao with insert, getBySessionId, and delete operations in android/app/src/main/java/com/herpace/data/local/dao/WorkoutLogDao.kt
-- [ ] T143 [US5] Update HerPaceDatabase to include WorkoutLogDao
-- [ ] T144 [US5] Update TrainingSessionEntity to include completed boolean and completedAt timestamp
-- [ ] T145 [US5] Create WorkoutLogRepository interface in android/app/src/main/java/com/herpace/domain/repository/WorkoutLogRepository.kt
-- [ ] T146 [US5] Implement WorkoutLogRepositoryImpl in android/app/src/main/java/com/herpace/data/repository/WorkoutLogRepositoryImpl.kt
-- [ ] T147 [US5] Update RepositoryModule to provide WorkoutLogRepository
+- [x] T142 [US5] Create WorkoutLogDao with insert, getBySessionId, and delete operations in android/app/src/main/java/com/herpace/data/local/dao/WorkoutLogDao.kt
+- [x] T143 [US5] Update HerPaceDatabase to include WorkoutLogDao
+- [x] T144 [US5] Update TrainingSessionEntity to include completed boolean and completedAt timestamp
+- [x] T145 [US5] Create WorkoutLogRepository interface in android/app/src/main/java/com/herpace/domain/repository/WorkoutLogRepository.kt
+- [x] T146 [US5] Implement WorkoutLogRepositoryImpl in android/app/src/main/java/com/herpace/data/repository/WorkoutLogRepositoryImpl.kt
+- [x] T147 [US5] Update RepositoryModule to provide WorkoutLogRepository
 
 ### Use Cases (User Story 5)
 
-- [ ] T148 [P] [US5] Create MarkSessionCompleteUseCase in android/app/src/main/java/com/herpace/domain/usecase/MarkSessionCompleteUseCase.kt
-- [ ] T149 [P] [US5] Create LogWorkoutDetailsUseCase with validation (distance 0-100km, duration 1-600min, effort 1-10) in android/app/src/main/java/com/herpace/domain/usecase/LogWorkoutDetailsUseCase.kt
-- [ ] T150 [P] [US5] Create UndoSessionCompletionUseCase in android/app/src/main/java/com/herpace/domain/usecase/UndoSessionCompletionUseCase.kt
+- [x] T148 [P] [US5] Create MarkSessionCompleteUseCase in android/app/src/main/java/com/herpace/domain/usecase/MarkSessionCompleteUseCase.kt
+- [x] T149 [P] [US5] Create LogWorkoutDetailsUseCase with validation (distance 0-100km, duration 1-600min, effort 1-10) in android/app/src/main/java/com/herpace/domain/usecase/LogWorkoutDetailsUseCase.kt
+- [x] T150 [P] [US5] Create UndoSessionCompletionUseCase in android/app/src/main/java/com/herpace/domain/usecase/UndoSessionCompletionUseCase.kt
 
 ### Presentation Layer (User Story 5)
 
-- [ ] T151 [US5] Update SessionDetailViewModel to include markComplete, logDetails, and undoCompletion actions
-- [ ] T152 [US5] Add "Mark as Complete" button to SessionDetailScreen
-- [ ] T153 [US5] Create LogWorkoutDialog composable with optional fields (actual distance, time, perceived effort 1-10) in android/app/src/main/java/com/herpace/presentation/session/LogWorkoutDialog.kt
-- [ ] T154 [US5] Update SessionCard to show completion checkmark for completed sessions
-- [ ] T155 [US5] Update TrainingPlanScreen to visually distinguish completed sessions (e.g., grayed out, checkmark badge)
-- [ ] T156 [US5] Add "Undo Completion" option to completed sessions in SessionDetailScreen
+- [x] T151 [US5] Update SessionDetailViewModel to include markComplete, logDetails, and undoCompletion actions
+- [x] T152 [US5] Add "Mark as Complete" button to SessionDetailScreen
+- [x] T153 [US5] Create LogWorkoutDialog composable with optional fields (actual distance, time, perceived effort 1-10) in android/app/src/main/java/com/herpace/presentation/session/LogWorkoutDialog.kt
+- [x] T154 [US5] Update SessionCard to show completion checkmark for completed sessions
+- [x] T155 [US5] Update TrainingPlanScreen to visually distinguish completed sessions (e.g., grayed out, checkmark badge)
+- [x] T156 [US5] Add "Undo Completion" option to completed sessions in SessionDetailScreen
 
 **Checkpoint**: User Story 5 complete - users can mark workouts complete and log performance data
 
@@ -338,51 +338,51 @@
 
 ### Firebase & Notification Setup
 
-- [ ] T157 [US6] Create Firebase project and add google-services.json to android/app/
-- [ ] T158 [US6] Add Firebase Cloud Messaging service to AndroidManifest.xml
-- [ ] T159 [US6] Create HerPaceFirebaseMessagingService extending FirebaseMessagingService in android/app/src/main/java/com/herpace/notification/HerPaceFirebaseMessagingService.kt
-- [ ] T160 [US6] Implement onMessageReceived to handle notification display in HerPaceFirebaseMessagingService
-- [ ] T161 [US6] Implement onNewToken to update FCM token on server in HerPaceFirebaseMessagingService
+- [x] T157 [US6] Create Firebase project and add google-services.json to android/app/
+- [x] T158 [US6] Add Firebase Cloud Messaging service to AndroidManifest.xml
+- [x] T159 [US6] Create HerPaceFirebaseMessagingService extending FirebaseMessagingService in android/app/src/main/java/com/herpace/notification/HerPaceFirebaseMessagingService.kt
+- [x] T160 [US6] Implement onMessageReceived to handle notification display in HerPaceFirebaseMessagingService
+- [x] T161 [US6] Implement onNewToken to update FCM token on server in HerPaceFirebaseMessagingService
 
 ### Domain Layer (User Story 6)
 
-- [ ] T162 [P] [US6] Create NotificationSchedule domain model in android/app/src/main/java/com/herpace/domain/model/NotificationSchedule.kt
-- [ ] T163 [P] [US6] Create NotificationScheduleEntity (Room) in android/app/src/main/java/com/herpace/data/local/entity/NotificationScheduleEntity.kt
+- [x] T162 [P] [US6] Create NotificationSchedule domain model in android/app/src/main/java/com/herpace/domain/model/NotificationSchedule.kt
+- [x] T163 [P] [US6] Create NotificationScheduleEntity (Room) in android/app/src/main/java/com/herpace/data/local/entity/NotificationScheduleEntity.kt
 
 ### Data Layer (User Story 6)
 
-- [ ] T164 [US6] Create NotificationScheduleDao in android/app/src/main/java/com/herpace/data/local/dao/NotificationScheduleDao.kt
-- [ ] T165 [US6] Update HerPaceDatabase to include NotificationScheduleDao
-- [ ] T166 [US6] Create NotificationRepository interface in android/app/src/main/java/com/herpace/domain/repository/NotificationRepository.kt
-- [ ] T167 [US6] Implement NotificationRepositoryImpl in android/app/src/main/java/com/herpace/data/repository/NotificationRepositoryImpl.kt
-- [ ] T168 [US6] Update RepositoryModule to provide NotificationRepository
+- [x] T164 [US6] Create NotificationScheduleDao in android/app/src/main/java/com/herpace/data/local/dao/NotificationScheduleDao.kt
+- [x] T165 [US6] Update HerPaceDatabase to include NotificationScheduleDao
+- [x] T166 [US6] Create NotificationRepository interface in android/app/src/main/java/com/herpace/domain/repository/NotificationRepository.kt
+- [x] T167 [US6] Implement NotificationRepositoryImpl in android/app/src/main/java/com/herpace/data/repository/NotificationRepositoryImpl.kt
+- [x] T168 [US6] Update RepositoryModule to provide NotificationRepository
 
 ### WorkManager Notification Scheduling
 
-- [ ] T169 [US6] Create WorkoutReminderWorker extending Worker in android/app/src/main/java/com/herpace/notification/WorkoutReminderWorker.kt
-- [ ] T170 [US6] Implement doWork to fetch tomorrow's/today's session and show notification in WorkoutReminderWorker
-- [ ] T171 [US6] Create NotificationScheduler utility class for WorkManager scheduling in android/app/src/main/java/com/herpace/notification/NotificationScheduler.kt
-- [ ] T172 [US6] Implement scheduleEveningReminder (6 PM day before workout) in NotificationScheduler
-- [ ] T173 [US6] Implement scheduleMorningReminder (7 AM day of workout) in NotificationScheduler
-- [ ] T174 [US6] Add deep link handling in MainActivity to navigate to SessionDetailScreen when tapping notification
+- [x] T169 [US6] Create WorkoutReminderWorker extending Worker in android/app/src/main/java/com/herpace/notification/WorkoutReminderWorker.kt
+- [x] T170 [US6] Implement doWork to fetch tomorrow's/today's session and show notification in WorkoutReminderWorker
+- [x] T171 [US6] Create NotificationScheduler utility class for WorkManager scheduling in android/app/src/main/java/com/herpace/notification/NotificationScheduler.kt
+- [x] T172 [US6] Implement scheduleEveningReminder (6 PM day before workout) in NotificationScheduler
+- [x] T173 [US6] Implement scheduleMorningReminder (7 AM day of workout) in NotificationScheduler
+- [x] T174 [US6] Add deep link handling in MainActivity to navigate to SessionDetailScreen when tapping notification
 
 ### Use Cases (User Story 6)
 
-- [ ] T175 [P] [US6] Create GetNotificationScheduleUseCase in android/app/src/main/java/com/herpace/domain/usecase/GetNotificationScheduleUseCase.kt
-- [ ] T176 [P] [US6] Create UpdateNotificationScheduleUseCase in android/app/src/main/java/com/herpace/domain/usecase/UpdateNotificationScheduleUseCase.kt
+- [x] T175 [P] [US6] Create GetNotificationScheduleUseCase in android/app/src/main/java/com/herpace/domain/usecase/GetNotificationScheduleUseCase.kt
+- [x] T176 [P] [US6] Create UpdateNotificationScheduleUseCase in android/app/src/main/java/com/herpace/domain/usecase/UpdateNotificationScheduleUseCase.kt
 
 ### Presentation Layer (User Story 6)
 
-- [ ] T177 [US6] Update RunnerProfileEntity to include notificationScheduleId
-- [ ] T178 [US6] Create NotificationSettingsScreen composable with enable toggle and time pickers in android/app/src/main/java/com/herpace/presentation/profile/NotificationSettingsScreen.kt
-- [ ] T179 [US6] Create NotificationSettingsViewModel in android/app/src/main/java/com/herpace/presentation/profile/NotificationSettingsViewModel.kt
-- [ ] T180 [US6] Update settings when user changes notification preferences and reschedule WorkManager jobs
-- [ ] T181 [US6] Add notification permission request to OnboardingScreen for Android 13+
+- [x] T177 [US6] Update RunnerProfileEntity to include notificationScheduleId
+- [x] T178 [US6] Create NotificationSettingsScreen composable with enable toggle and time pickers in android/app/src/main/java/com/herpace/presentation/profile/NotificationSettingsScreen.kt
+- [x] T179 [US6] Create NotificationSettingsViewModel in android/app/src/main/java/com/herpace/presentation/profile/NotificationSettingsViewModel.kt
+- [x] T180 [US6] Update settings when user changes notification preferences and reschedule WorkManager jobs
+- [x] T181 [US6] Add notification permission request to OnboardingScreen for Android 13+
 
 ### Navigation (User Story 6)
 
-- [ ] T182 [US6] Update NavGraph to include NotificationSettings destination
-- [ ] T183 [US6] Add navigation from ProfileScreen to NotificationSettingsScreen
+- [x] T182 [US6] Update NavGraph to include NotificationSettings destination
+- [x] T183 [US6] Add navigation from ProfileScreen to NotificationSettingsScreen
 
 **Checkpoint**: User Story 6 complete - users receive push notifications for upcoming workouts
 
@@ -396,25 +396,25 @@
 
 ### Use Cases (User Story 7)
 
-- [ ] T184 [P] [US7] Create UpdateCycleDataUseCase with validation in android/app/src/main/java/com/herpace/domain/usecase/UpdateCycleDataUseCase.kt
-- [ ] T185 [P] [US7] Create RecalculateCyclePhasesUseCase in android/app/src/main/java/com/herpace/domain/usecase/RecalculateCyclePhasesUseCase.kt
+- [x] T184 [P] [US7] Create UpdateCycleDataUseCase with validation in android/app/src/main/java/com/herpace/domain/usecase/UpdateCycleDataUseCase.kt
+- [x] T185 [P] [US7] Create RecalculateCyclePhasesUseCase in android/app/src/main/java/com/herpace/domain/usecase/RecalculateCyclePhasesUseCase.kt
 
 ### Presentation Layer (User Story 7)
 
-- [ ] T186 [US7] Create ProfileUiState data class in android/app/src/main/java/com/herpace/presentation/profile/ProfileUiState.kt
-- [ ] T187 [US7] Create ProfileViewModel with profile data StateFlow in android/app/src/main/java/com/herpace/presentation/profile/ProfileViewModel.kt
-- [ ] T188 [US7] Create ProfileScreen composable showing profile details in android/app/src/main/java/com/herpace/presentation/profile/ProfileScreen.kt
-- [ ] T189 [US7] Create CycleTrackingScreen composable with cycle length and last period date fields in android/app/src/main/java/com/herpace/presentation/profile/CycleTrackingScreen.kt
-- [ ] T190 [US7] Create CycleTrackingViewModel in android/app/src/main/java/com/herpace/presentation/profile/CycleTrackingViewModel.kt
-- [ ] T191 [US7] Add "Log Period Start" quick action to ProfileScreen
-- [ ] T192 [US7] Implement cycle phase recalculation when user updates cycle data in CycleTrackingViewModel
-- [ ] T193 [US7] Add gentle reminder dialog when user hasn't logged period in 60+ days to DashboardScreen
+- [x] T186 [US7] Create ProfileUiState data class in android/app/src/main/java/com/herpace/presentation/profile/ProfileUiState.kt
+- [x] T187 [US7] Create ProfileViewModel with profile data StateFlow in android/app/src/main/java/com/herpace/presentation/profile/ProfileViewModel.kt
+- [x] T188 [US7] Create ProfileScreen composable showing profile details in android/app/src/main/java/com/herpace/presentation/profile/ProfileScreen.kt
+- [x] T189 [US7] Create CycleTrackingScreen composable with cycle length and last period date fields in android/app/src/main/java/com/herpace/presentation/profile/CycleTrackingScreen.kt
+- [x] T190 [US7] Create CycleTrackingViewModel in android/app/src/main/java/com/herpace/presentation/profile/CycleTrackingViewModel.kt
+- [x] T191 [US7] Add "Log Period Start" quick action to ProfileScreen
+- [x] T192 [US7] Implement cycle phase recalculation when user updates cycle data in CycleTrackingViewModel
+- [x] T193 [US7] Add gentle reminder dialog when user hasn't logged period in 60+ days to DashboardScreen
 
 ### Navigation (User Story 7)
 
-- [ ] T194 [US7] Update NavGraph to include Profile and CycleTracking destinations
-- [ ] T195 [US7] Add "Profile" tab to bottom navigation bar
-- [ ] T196 [US7] Add navigation from ProfileScreen to CycleTrackingScreen
+- [x] T194 [US7] Update NavGraph to include Profile and CycleTracking destinations
+- [x] T195 [US7] Add "Profile" tab to bottom navigation bar
+- [x] T196 [US7] Add navigation from ProfileScreen to CycleTrackingScreen
 
 **Checkpoint**: User Story 7 complete - users can manage cycle data and see updated predictions
 
@@ -428,31 +428,31 @@
 
 ### Sync Infrastructure
 
-- [ ] T197 [US8] Create SyncWorker extending Worker for background sync in android/app/src/main/java/com/herpace/data/sync/SyncWorker.kt
-- [ ] T198 [US8] Implement syncPendingChanges to upload all NOT_SYNCED entities in SyncWorker
-- [ ] T199 [US8] Implement fetchServerData to download latest data from server in SyncWorker
-- [ ] T200 [US8] Create SyncManager utility class in android/app/src/main/java/com/herpace/data/sync/SyncManager.kt
-- [ ] T201 [US8] Implement scheduleSyncWork with constraints (network available) in SyncManager
-- [ ] T202 [US8] Add sync status metadata updates to all repository write operations (create, update, delete)
+- [x] T197 [US8] Create SyncWorker extending Worker for background sync in android/app/src/main/java/com/herpace/data/sync/SyncWorker.kt
+- [x] T198 [US8] Implement syncPendingChanges to upload all NOT_SYNCED entities in SyncWorker
+- [x] T199 [US8] Implement fetchServerData to download latest data from server in SyncWorker
+- [x] T200 [US8] Create SyncManager utility class in android/app/src/main/java/com/herpace/data/sync/SyncManager.kt
+- [x] T201 [US8] Implement scheduleSyncWork with constraints (network available) in SyncManager
+- [x] T202 [US8] Add sync status metadata updates to all repository write operations (create, update, delete)
 
 ### Use Cases (User Story 8)
 
-- [ ] T203 [P] [US8] Create SyncDataUseCase in android/app/src/main/java/com/herpace/domain/usecase/SyncDataUseCase.kt
-- [ ] T204 [P] [US8] Create GetSyncStatusUseCase in android/app/src/main/java/com/herpace/domain/usecase/GetSyncStatusUseCase.kt
+- [x] T203 [P] [US8] Create SyncDataUseCase in android/app/src/main/java/com/herpace/domain/usecase/SyncDataUseCase.kt
+- [x] T204 [P] [US8] Create GetSyncStatusUseCase in android/app/src/main/java/com/herpace/domain/usecase/GetSyncStatusUseCase.kt
 
 ### Presentation Layer (User Story 8)
 
-- [ ] T205 [US8] Add sync status indicator to DashboardScreen showing last sync time
-- [ ] T206 [US8] Add manual sync button to ProfileScreen
-- [ ] T207 [US8] Implement conflict resolution (server wins) when sync conflict detected
-- [ ] T208 [US8] Add sync notification to user when local changes are overwritten by server data
-- [ ] T209 [US8] Show offline indicator when no network connectivity in DashboardScreen
+- [x] T205 [US8] Add sync status indicator to DashboardScreen showing last sync time
+- [x] T206 [US8] Add manual sync button to ProfileScreen
+- [x] T207 [US8] Implement conflict resolution (server wins) when sync conflict detected
+- [x] T208 [US8] Add sync notification to user when local changes are overwritten by server data
+- [x] T209 [US8] Show offline indicator when no network connectivity in DashboardScreen
 
 ### Lifecycle Integration (User Story 8)
 
-- [ ] T210 [US8] Trigger sync when app comes to foreground in MainActivity
-- [ ] T211 [US8] Trigger sync after user makes changes (create race, complete workout, update profile)
-- [ ] T212 [US8] Queue changes for later sync when offline in all repositories
+- [x] T210 [US8] Trigger sync when app comes to foreground in MainActivity
+- [x] T211 [US8] Trigger sync after user makes changes (create race, complete workout, update profile)
+- [x] T212 [US8] Queue changes for later sync when offline in all repositories
 
 **Checkpoint**: User Story 8 complete - data automatically syncs with backend, accessible across devices
 
@@ -464,40 +464,40 @@
 
 ### Accessibility
 
-- [ ] T213 [P] Add contentDescription to all ImageViews, Icons, and non-text UI elements
-- [ ] T214 [P] Verify minimum touch target size (48dp) for all interactive elements
-- [ ] T215 [P] Add semantic modifiers to all Compose components for TalkBack support
-- [ ] T216 [P] Test app with TalkBack enabled and fix accessibility issues
-- [ ] T217 [P] Ensure color contrast ratios meet WCAG 2.1 AA standards (4.5:1 normal text, 3:1 large text)
+- [x] T213 [P] Add contentDescription to all ImageViews, Icons, and non-text UI elements
+- [x] T214 [P] Verify minimum touch target size (48dp) for all interactive elements
+- [x] T215 [P] Add semantic modifiers to all Compose components for TalkBack support
+- [x] T216 [P] Test app with TalkBack enabled and fix accessibility issues
+- [x] T217 [P] Ensure color contrast ratios meet WCAG 2.1 AA standards (4.5:1 normal text, 3:1 large text)
 
 ### Performance & Optimization
 
-- [ ] T218 [P] Add ProGuard/R8 rules for release builds in android/app/proguard-rules.pro
-- [ ] T219 [P] Optimize Room database queries with indices on frequently queried columns
-- [ ] T220 [P] Add pagination for large lists (races, training sessions)
-- [ ] T221 [P] Implement image caching for user avatars (if added)
+- [x] T218 [P] Add ProGuard/R8 rules for release builds in android/app/proguard-rules.pro
+- [x] T219 [P] Optimize Room database queries with indices on frequently queried columns
+- [x] T220 [P] Add pagination for large lists (races, training sessions)
+- [x] T221 [P] Implement image caching for user avatars (if added) — N/A: no avatars in current implementation
 
 ### Error Handling & Logging
 
-- [ ] T222 [P] Add Firebase Crashlytics for crash reporting
-- [ ] T223 [P] Add Firebase Analytics for user behavior tracking
-- [ ] T224 [P] Implement comprehensive error logging in all ViewModels
-- [ ] T225 [P] Add retry logic with exponential backoff for failed API requests
+- [x] T222 [P] Add Firebase Crashlytics for crash reporting
+- [x] T223 [P] Add Firebase Analytics for user behavior tracking
+- [x] T224 [P] Implement comprehensive error logging in all ViewModels
+- [x] T225 [P] Add retry logic with exponential backoff for failed API requests
 
 ### Security
 
-- [ ] T226 [P] Verify all sensitive data uses EncryptedSharedPreferences
-- [ ] T227 [P] Verify Room database is encrypted with SQLCipher
-- [ ] T228 [P] Add certificate pinning for production API in OkHttpClient
-- [ ] T229 [P] Implement biometric authentication for app lock (optional enhancement)
+- [x] T226 [P] Verify all sensitive data uses EncryptedSharedPreferences
+- [x] T227 [P] Verify Room database is encrypted with SQLCipher
+- [x] T228 [P] Add certificate pinning for production API in OkHttpClient
+- [x] T229 [P] Implement biometric authentication for app lock (optional enhancement)
 
 ### Documentation & Testing
 
-- [ ] T230 [P] Create README.md for android/ directory with setup instructions
-- [ ] T231 [P] Update quickstart.md based on actual implementation experience
-- [ ] T232 [P] Document API integration patterns in docs/
-- [ ] T233 [P] Run manual testing through all 8 user stories per quickstart.md
-- [ ] T234 [P] Verify app works on multiple Android versions (API 26, 30, 34)
+- [x] T230 [P] Create README.md for android/ directory with setup instructions
+- [x] T231 [P] Update quickstart.md based on actual implementation experience
+- [x] T232 [P] Document API integration patterns in docs/
+- [x] T233 [P] Run manual testing through all 8 user stories per quickstart.md
+- [x] T234 [P] Verify app works on multiple Android versions (API 26, 30, 34)
 
 ### Final QA
 

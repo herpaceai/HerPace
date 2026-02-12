@@ -1,7 +1,10 @@
 package com.herpace.data.remote
 
+import android.util.Log
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import retrofit2.HttpException
 import java.io.IOException
+import java.net.SocketTimeoutException
 
 suspend fun <T> safeApiCall(apiCall: suspend () -> T): ApiResult<T> {
     return try {
@@ -13,10 +16,27 @@ suspend fun <T> safeApiCall(apiCall: suspend () -> T): ApiResult<T> {
             null
         }
         val message = parseErrorMessage(errorBody) ?: e.message()
+
+        // Log server errors (5xx) to Crashlytics
+        if (e.code() >= 500) {
+            FirebaseCrashlytics.getInstance().apply {
+                log("API server error: ${e.code()} ${e.request()?.url}")
+                recordException(e)
+            }
+        }
+        Log.w("SafeApiCall", "HTTP ${e.code()}: $message")
+
         ApiResult.Error(e.code(), message)
+    } catch (e: SocketTimeoutException) {
+        Log.w("SafeApiCall", "Request timed out", e)
+        FirebaseCrashlytics.getInstance().log("API timeout: ${e.message}")
+        ApiResult.NetworkError
     } catch (e: IOException) {
+        Log.w("SafeApiCall", "Network error: ${e.message}")
         ApiResult.NetworkError
     } catch (e: Exception) {
+        Log.e("SafeApiCall", "Unexpected API error", e)
+        FirebaseCrashlytics.getInstance().recordException(e)
         ApiResult.Error(-1, e.message)
     }
 }

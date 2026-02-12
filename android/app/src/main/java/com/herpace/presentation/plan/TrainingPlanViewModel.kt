@@ -7,6 +7,7 @@ import com.herpace.data.remote.ApiResult
 import com.herpace.domain.usecase.GenerateTrainingPlanUseCase
 import com.herpace.domain.usecase.GetActiveTrainingPlanUseCase
 import com.herpace.domain.usecase.GetSessionsByWeekUseCase
+import com.herpace.util.AnalyticsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,6 +21,7 @@ class TrainingPlanViewModel @Inject constructor(
     private val generateTrainingPlanUseCase: GenerateTrainingPlanUseCase,
     private val getActiveTrainingPlanUseCase: GetActiveTrainingPlanUseCase,
     private val getSessionsByWeekUseCase: GetSessionsByWeekUseCase,
+    private val analyticsHelper: AnalyticsHelper,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -80,6 +82,7 @@ class TrainingPlanViewModel @Inject constructor(
             when (val result = generateTrainingPlanUseCase(raceId)) {
                 is ApiResult.Success -> {
                     val plan = result.data
+                    analyticsHelper.logPlanGenerated(raceId, plan.totalWeeks)
                     val sessionsByWeek = plan.sessions.groupBy { it.weekNumber }
                     _uiState.update {
                         it.copy(
@@ -92,6 +95,7 @@ class TrainingPlanViewModel @Inject constructor(
                     }
                 }
                 is ApiResult.Error -> {
+                    analyticsHelper.logError("plan_generation", "api_error", result.message)
                     _uiState.update {
                         it.copy(
                             isGenerating = false,
@@ -100,6 +104,7 @@ class TrainingPlanViewModel @Inject constructor(
                     }
                 }
                 is ApiResult.NetworkError -> {
+                    analyticsHelper.logError("plan_generation", "network_error", null)
                     _uiState.update {
                         it.copy(
                             isGenerating = false,
