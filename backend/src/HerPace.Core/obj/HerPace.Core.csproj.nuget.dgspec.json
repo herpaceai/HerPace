@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Dev\\HerPaceApp\\backend\\src\\HerPace.Core\\HerPace.Core.csproj": {}
+    "C:\\Dev\\HerPaceAI\\HerPace\\backend\\src\\HerPace.Core\\HerPace.Core.csproj": {}
   },
   "projects": {
-    "C:\\Dev\\HerPaceApp\\backend\\src\\HerPace.Core\\HerPace.Core.csproj": {
+    "C:\\Dev\\HerPaceAI\\HerPace\\backend\\src\\HerPace.Core\\HerPace.Core.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Dev\\HerPaceApp\\backend\\src\\HerPace.Core\\HerPace.Core.csproj",
+        "projectUniqueName": "C:\\Dev\\HerPaceAI\\HerPace\\backend\\src\\HerPace.Core\\HerPace.Core.csproj",
         "projectName": "HerPace.Core",
-        "projectPath": "C:\\Dev\\HerPaceApp\\backend\\src\\HerPace.Core\\HerPace.Core.csproj",
+        "projectPath": "C:\\Dev\\HerPaceAI\\HerPace\\backend\\src\\HerPace.Core\\HerPace.Core.csproj",
         "packagesPath": "C:\\Users\\alxse\\.nuget\\packages\\",
-        "outputPath": "C:\\Dev\\HerPaceApp\\backend\\src\\HerPace.Core\\obj\\",
+        "outputPath": "C:\\Dev\\HerPaceAI\\HerPace\\backend\\src\\HerPace.Core\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

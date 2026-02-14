@@ -29,6 +29,18 @@ sealed class Screen(val route: String) {
         fun createRoute(sessionId: String) = "session/$sessionId"
     }
 
+    // Voice Coach
+    data object VoiceCoach : Screen("voice-coach/{sessionId}") {
+        fun createRoute(sessionId: String) = "voice-coach/$sessionId"
+    }
+
+    // Fitness Tracker
+    data object ConnectedServices : Screen("connected-services")
+    data object ImportedActivities : Screen("imported-activities")
+    data object ImportedActivityDetail : Screen("imported-activities/{activityId}") {
+        fun createRoute(activityId: String) = "imported-activities/$activityId"
+    }
+
     // Profile
     data object Profile : Screen("profile")
     data object CycleTracking : Screen("profile/cycle-tracking")

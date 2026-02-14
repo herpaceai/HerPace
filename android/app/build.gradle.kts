@@ -135,6 +135,9 @@ dependencies {
     // Biometric Authentication
     implementation(libs.androidx.biometric)
 
+    // Browser (Chrome Custom Tabs for OAuth)
+    implementation(libs.androidx.browser)
+
     // Health Connect (Google Fit replacement)
     implementation(libs.androidx.health.connect)
 

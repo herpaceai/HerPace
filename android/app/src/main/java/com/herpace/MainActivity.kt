@@ -1,6 +1,7 @@
 package com.herpace
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.compose.setContent
@@ -57,6 +58,9 @@ class MainActivity : FragmentActivity() {
 
     private var startDestination by mutableStateOf<String?>(null)
     private var pendingSessionId: String? = null
+    private var pendingOAuthConnected: String? = null
+    private var pendingOAuthError: String? = null
+    private var pendingOAuthPlatform: String? = null
     private var navController: NavHostController? = null
     private var isAuthenticated by mutableStateOf(true)
     private var biometricCheckDone = false
@@ -67,6 +71,9 @@ class MainActivity : FragmentActivity() {
 
         // Check for deep link from notification
         pendingSessionId = intent?.getStringExtra("sessionId")
+
+        // Check for OAuth callback deep link (herpace://oauth/callback?...)
+        extractOAuthParams(intent?.data)
 
         determineStartDestination()
 
@@ -126,6 +133,11 @@ class MainActivity : FragmentActivity() {
                             pendingSessionId = null
                             navControllerInstance.navigate(Screen.SessionDetail.createRoute(sessionId))
                         }
+
+                        // Navigate to Connected Services if returning from OAuth
+                        if (pendingOAuthConnected != null || pendingOAuthError != null) {
+                            navigateToConnectedServicesWithOAuthResult(navControllerInstance)
+                        }
                     }
                     } // end authenticated else
                 }
@@ -135,6 +147,16 @@ class MainActivity : FragmentActivity() {
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
+
+        // Handle OAuth callback deep link
+        val data = intent.data
+        if (data != null && data.scheme == "herpace" && data.host == "oauth") {
+            extractOAuthParams(data)
+            navController?.let { navigateToConnectedServicesWithOAuthResult(it) }
+            return
+        }
+
+        // Handle notification deep link
         val sessionId = intent.getStringExtra("sessionId")
         if (sessionId != null) {
             navController?.navigate(Screen.SessionDetail.createRoute(sessionId))
@@ -184,6 +206,42 @@ class MainActivity : FragmentActivity() {
                 }
             }
         )
+    }
+
+    private fun extractOAuthParams(uri: Uri?) {
+        if (uri == null || uri.scheme != "herpace") return
+        val path = uri.path ?: return
+        if (!path.startsWith("/callback")) return
+
+        pendingOAuthConnected = uri.getQueryParameter("connected")
+        pendingOAuthError = uri.getQueryParameter("error")
+        pendingOAuthPlatform = uri.getQueryParameter("platform")
+
+        Log.d("MainActivity", "OAuth callback: connected=$pendingOAuthConnected error=$pendingOAuthError platform=$pendingOAuthPlatform")
+    }
+
+    private fun navigateToConnectedServicesWithOAuthResult(nav: NavHostController) {
+        val connected = pendingOAuthConnected
+        val error = pendingOAuthError
+        val platform = pendingOAuthPlatform
+
+        // Clear pending state
+        pendingOAuthConnected = null
+        pendingOAuthError = null
+        pendingOAuthPlatform = null
+
+        // Build route with query params for the ViewModel to consume
+        val params = buildList {
+            if (connected != null) add("connected=$connected")
+            if (error != null) add("error=$error")
+            if (platform != null) add("platform=$platform")
+        }
+        val query = if (params.isNotEmpty()) "?${params.joinToString("&")}" else ""
+
+        nav.navigate("${Screen.ConnectedServices.route}$query") {
+            // Don't stack multiple instances
+            launchSingleTop = true
+        }
     }
 
     private fun determineStartDestination() {

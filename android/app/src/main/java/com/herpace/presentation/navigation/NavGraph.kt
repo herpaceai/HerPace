@@ -22,7 +22,9 @@ import com.herpace.presentation.races.RacesListScreen
 import com.herpace.presentation.profile.CycleTrackingScreen
 import com.herpace.presentation.profile.NotificationSettingsScreen
 import com.herpace.presentation.profile.ProfileScreen
+import com.herpace.presentation.connectedservices.ConnectedServicesScreen
 import com.herpace.presentation.session.SessionDetailScreen
+import com.herpace.presentation.voicecoach.VoiceCoachScreen
 
 @Composable
 fun NavGraph(
@@ -148,9 +150,41 @@ fun NavGraph(
         composable(
             route = Screen.SessionDetail.route,
             arguments = listOf(navArgument("sessionId") { type = NavType.StringType })
-        ) {
+        ) { backStackEntry ->
+            val sessionId = backStackEntry.arguments?.getString("sessionId") ?: ""
             SessionDetailScreen(
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToVoiceCoach = {
+                    navController.navigate(Screen.VoiceCoach.createRoute(sessionId))
+                }
+            )
+        }
+        composable(
+            route = Screen.VoiceCoach.route,
+            arguments = listOf(navArgument("sessionId") { type = NavType.StringType })
+        ) {
+            VoiceCoachScreen(
                 onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        // Fitness Tracker
+        composable(
+            route = "${Screen.ConnectedServices.route}?connected={connected}&error={error}&platform={platform}",
+            arguments = listOf(
+                navArgument("connected") { type = NavType.StringType; nullable = true; defaultValue = null },
+                navArgument("error") { type = NavType.StringType; nullable = true; defaultValue = null },
+                navArgument("platform") { type = NavType.StringType; nullable = true; defaultValue = null }
+            )
+        ) { backStackEntry ->
+            val oauthConnected = backStackEntry.arguments?.getString("connected")
+            val oauthError = backStackEntry.arguments?.getString("error")
+            val oauthPlatform = backStackEntry.arguments?.getString("platform")
+            ConnectedServicesScreen(
+                onNavigateBack = { navController.popBackStack() },
+                oauthConnected = oauthConnected,
+                oauthError = oauthError,
+                oauthPlatform = oauthPlatform
             )
         }
 
@@ -160,6 +194,9 @@ fun NavGraph(
                 onNavigateBack = { navController.popBackStack() },
                 onNavigateToCycleTracking = {
                     navController.navigate(Screen.CycleTracking.route)
+                },
+                onNavigateToConnectedServices = {
+                    navController.navigate(Screen.ConnectedServices.route)
                 },
                 onNavigateToNotificationSettings = {
                     navController.navigate(Screen.NotificationSettings.route)

@@ -10,10 +10,12 @@ import com.herpace.data.local.dao.RaceDao
 import com.herpace.data.local.dao.RunnerProfileDao
 import com.herpace.data.local.dao.TrainingPlanDao
 import com.herpace.data.local.dao.TrainingSessionDao
+import com.herpace.data.local.dao.UserDao
 import com.herpace.data.local.entity.RaceEntity
 import com.herpace.data.local.entity.RunnerProfileEntity
 import com.herpace.data.local.entity.TrainingPlanEntity
 import com.herpace.data.local.entity.TrainingSessionEntity
+import com.herpace.data.local.entity.UserEntity
 import com.herpace.data.remote.ApiResult
 import com.herpace.data.remote.HerPaceApiService
 import com.herpace.data.remote.dto.RunnerProfileRequest
@@ -40,6 +42,7 @@ class SyncWorker @AssistedInject constructor(
     @Assisted workerParams: WorkerParameters,
     private val apiService: HerPaceApiService,
     private val runnerProfileDao: RunnerProfileDao,
+    private val userDao: UserDao,
     private val raceDao: RaceDao,
     private val trainingPlanDao: TrainingPlanDao,
     private val trainingSessionDao: TrainingSessionDao,
@@ -242,6 +245,9 @@ class SyncWorker @AssistedInject constructor(
                     serverTimestamp = Instant.now(),
                     version = (existing?.version ?: 0) + 1
                 )
+                if (userDao.getById(userId) == null) {
+                    userDao.insert(UserEntity(id = userId, email = "", createdAt = Instant.now()))
+                }
                 runnerProfileDao.insert(entity)
                 Log.d(TAG, "Profile fetched from server${if (conflicts > 0) " (conflict resolved)" else ""}")
             }

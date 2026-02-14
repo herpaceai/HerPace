@@ -20,6 +20,7 @@ work = "2.9.0"
 firebase-bom = "32.7.1"
 health-connect = "1.1.0-alpha07"
 security-crypto = "1.1.0-alpha06"
+browser = "1.8.0"
 biometric = "1.2.0-alpha05"
 sqlcipher = "4.5.4"
 sqlite = "2.4.0"
@@ -87,6 +88,9 @@ androidx-biometric = { group = "androidx.biometric", name = "biometric", version
 # SQLCipher
 sqlcipher-android = { group = "net.zetetic", name = "android-database-sqlcipher", version.ref = "sqlcipher" }
 androidx-sqlite = { group = "androidx.sqlite", name = "sqlite-ktx", version.ref = "sqlite" }
+
+# Browser (Chrome Custom Tabs)
+androidx-browser = { group = "androidx.browser", name = "browser", version.ref = "browser" }
 
 # Health Connect
 androidx-health-connect = { group = "androidx.health.connect", name = "connect-client", version.ref = "health-connect" }

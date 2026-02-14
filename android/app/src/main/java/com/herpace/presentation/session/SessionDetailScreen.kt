@@ -15,6 +15,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.DirectionsRun
+import androidx.compose.material.icons.filled.Mic
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -50,6 +52,7 @@ import java.util.Locale
 @Composable
 fun SessionDetailScreen(
     onNavigateBack: () -> Unit,
+    onNavigateToVoiceCoach: () -> Unit = {},
     viewModel: SessionDetailViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -91,7 +94,8 @@ fun SessionDetailScreen(
                         isMarkingComplete = uiState.isMarkingComplete,
                         onMarkCompleted = viewModel::markCompleted,
                         onUndoCompletion = viewModel::undoCompletion,
-                        onLogWorkout = viewModel::showLogWorkoutDialog
+                        onLogWorkout = viewModel::showLogWorkoutDialog,
+                        onVoiceCoach = onNavigateToVoiceCoach
                     )
                 }
             }
@@ -117,7 +121,8 @@ private fun SessionDetailContent(
     isMarkingComplete: Boolean,
     onMarkCompleted: () -> Unit,
     onUndoCompletion: () -> Unit,
-    onLogWorkout: () -> Unit
+    onLogWorkout: () -> Unit,
+    onVoiceCoach: () -> Unit
 ) {
     val dateFormatter = DateTimeFormatter.ofPattern("EEEE, MMMM d, yyyy")
     val isRestDay = session.workoutType == WorkoutType.REST_DAY
@@ -217,6 +222,20 @@ private fun SessionDetailContent(
                             text = "Log Workout Details",
                             onClick = onLogWorkout
                         )
+                        OutlinedButton(
+                            onClick = onVoiceCoach,
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = ButtonDefaults.outlinedButtonColors(
+                                contentColor = MaterialTheme.colorScheme.primary
+                            )
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Mic,
+                                contentDescription = null,
+                                modifier = Modifier.padding(end = 8.dp)
+                            )
+                            Text("Voice Coach")
+                        }
                     }
                     OutlinedButton(
                         onClick = onUndoCompletion,

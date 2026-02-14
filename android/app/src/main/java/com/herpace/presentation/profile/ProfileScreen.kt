@@ -16,6 +16,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.filled.FitnessCenter
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Refresh
@@ -56,6 +57,7 @@ import java.time.format.DateTimeFormatter
 fun ProfileScreen(
     onNavigateBack: () -> Unit,
     onNavigateToCycleTracking: () -> Unit,
+    onNavigateToConnectedServices: () -> Unit,
     onNavigateToNotificationSettings: () -> Unit,
     onLogout: () -> Unit,
     viewModel: ProfileViewModel = hiltViewModel()
@@ -238,6 +240,40 @@ fun ProfileScreen(
                         Icon(
                             Icons.AutoMirrored.Filled.ArrowForward,
                             contentDescription = "Go to notification settings",
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+
+                // Connected Services Card
+                Card(
+                    modifier = Modifier.fillMaxWidth().semantics {
+                        contentDescription = "Connected services. Tap to manage fitness tracker connections."
+                    },
+                    onClick = onNavigateToConnectedServices
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                Icons.Filled.FitnessCenter,
+                                contentDescription = "Connected services",
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Text(
+                                text = "Connected Services",
+                                style = MaterialTheme.typography.titleMedium
+                            )
+                        }
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowForward,
+                            contentDescription = "Go to connected services",
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }

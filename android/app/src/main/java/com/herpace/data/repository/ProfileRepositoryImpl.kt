@@ -2,7 +2,9 @@ package com.herpace.data.repository
 
 import com.herpace.data.local.SyncStatus
 import com.herpace.data.local.dao.RunnerProfileDao
+import com.herpace.data.local.dao.UserDao
 import com.herpace.data.local.entity.RunnerProfileEntity
+import com.herpace.data.local.entity.UserEntity
 import com.herpace.data.remote.ApiResult
 import com.herpace.data.remote.HerPaceApiService
 import com.herpace.data.remote.dto.RunnerProfileRequest
@@ -27,6 +29,7 @@ import javax.inject.Singleton
 class ProfileRepositoryImpl @Inject constructor(
     private val apiService: HerPaceApiService,
     private val runnerProfileDao: RunnerProfileDao,
+    private val userDao: UserDao,
     private val authTokenProvider: AuthTokenProvider,
     private val syncManager: SyncManager
 ) : ProfileRepository {
@@ -49,17 +52,20 @@ class ProfileRepositoryImpl @Inject constructor(
         return when (result) {
             is ApiResult.Success -> {
                 val savedProfile = mapResponseToDomain(result.data)
+                ensureUserExists(savedProfile.userId)
                 runnerProfileDao.insert(RunnerProfileEntity.fromDomain(savedProfile, SyncStatus.SYNCED))
                 ApiResult.Success(savedProfile)
             }
             is ApiResult.Error -> {
                 // Save locally as NOT_SYNCED for later sync
+                ensureUserExists(profile.userId)
                 runnerProfileDao.insert(RunnerProfileEntity.fromDomain(profile, SyncStatus.NOT_SYNCED))
                 syncManager.requestImmediateSync()
                 ApiResult.Success(profile)
             }
             is ApiResult.NetworkError -> {
                 // Save locally as NOT_SYNCED for later sync
+                ensureUserExists(profile.userId)
                 runnerProfileDao.insert(RunnerProfileEntity.fromDomain(profile, SyncStatus.NOT_SYNCED))
                 syncManager.requestImmediateSync()
                 ApiResult.Success(profile)
@@ -75,6 +81,7 @@ class ProfileRepositoryImpl @Inject constructor(
                 val response = result.data
                 if (response != null) {
                     val profile = mapResponseToDomain(response)
+                    ensureUserExists(profile.userId)
                     runnerProfileDao.insert(RunnerProfileEntity.fromDomain(profile))
                     ApiResult.Success(profile)
                 } else {
@@ -105,6 +112,12 @@ class ProfileRepositoryImpl @Inject constructor(
     override fun observeProfile(): Flow<RunnerProfile?> {
         val userId = authTokenProvider.getUserId() ?: return kotlinx.coroutines.flow.flowOf(null)
         return runnerProfileDao.observeByUserId(userId).map { it?.toDomain() }
+    }
+
+    private suspend fun ensureUserExists(userId: String) {
+        if (userDao.getById(userId) == null) {
+            userDao.insert(UserEntity(id = userId, email = "", createdAt = Instant.now()))
+        }
     }
 
     private fun mapResponseToDomain(response: RunnerProfileResponse): RunnerProfile {

@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "Ary/Gs2zFM8=",
+  "dgSpecHash": "0beUegqHtmg=",
   "success": true,
-  "projectFilePath": "C:\\Dev\\HerPaceApp\\backend\\src\\HerPace.Core\\HerPace.Core.csproj",
+  "projectFilePath": "C:\\Dev\\HerPaceAI\\HerPace\\backend\\src\\HerPace.Core\\HerPace.Core.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\alxse\\.nuget\\packages\\microsoft.aspnetcore.cryptography.internal\\8.0.0\\microsoft.aspnetcore.cryptography.internal.8.0.0.nupkg.sha512",
     "C:\\Users\\alxse\\.nuget\\packages\\microsoft.aspnetcore.cryptography.keyderivation\\8.0.0\\microsoft.aspnetcore.cryptography.keyderivation.8.0.0.nupkg.sha512",

@@ -101,7 +101,28 @@
       "Bash(./gradlew.bat clean:*)",
       "Bash(\"/c/Program Files/Microsoft/jdk-11.0.12.7-hotspot/bin/java\" -version)",
       "Bash(\"/c/Program Files/Android/Android Studio/jbr/bin/jlink\" --version)",
-      "Bash(\"/c/Program Files/Android/Android Studio/jbr/bin/jlink\" --module-path \"/c/Users/alxse/.gradle/caches/transforms-3/48436383f280c01a1bb8bab228f3e861/transformed/output/temp/jmod\" --add-modules java.base --output \"/c/Users/alxse/.gradle/caches/transforms-3/48436383f280c01a1bb8bab228f3e861/transformed/output/jdkImage\" --disable-plugin system-modules)"
+      "Bash(\"/c/Program Files/Android/Android Studio/jbr/bin/jlink\" --module-path \"/c/Users/alxse/.gradle/caches/transforms-3/48436383f280c01a1bb8bab228f3e861/transformed/output/temp/jmod\" --add-modules java.base --output \"/c/Users/alxse/.gradle/caches/transforms-3/48436383f280c01a1bb8bab228f3e861/transformed/output/jdkImage\" --disable-plugin system-modules)",
+      "WebFetch(domain:developers.strava.com)",
+      "WebFetch(domain:developer.garmin.com)",
+      "WebFetch(domain:apizone.suunto.com)",
+      "WebFetch(domain:www.polar.com)",
+      "WebFetch(domain:dev.fitbit.com)",
+      "Bash(npx:*)",
+      "Bash(./gradlew compileDebugKotlin:*)",
+      "Bash(gradlew.bat compileDebugKotlin:*)",
+      "Bash(cmd /c \"gradlew.bat compileDebugKotlin\")",
+      "Bash(cmd /c \"cd /d C:\\\\Dev\\\\HerPaceAI\\\\HerPace\\\\android && gradlew.bat compileDebugKotlin 2>&1\")",
+      "Bash(cmd.exe /c \"cd /d C:\\\\Dev\\\\HerPaceAI\\\\HerPace\\\\android && .\\\\gradlew.bat compileDebugKotlin\")",
+      "Bash(C:DevHerPaceAIHerPaceandroidgradlew.bat -p C:DevHerPaceAIHerPaceandroid compileDebugKotlin)",
+      "Bash(git -C \"C:\\\\Dev\\\\HerPaceAI\\\\HerPace\" branch -a)",
+      "Bash(git -C \"C:\\\\Dev\\\\HerPaceAI\\\\HerPace\" log --oneline -20)",
+      "Bash(git -C \"C:\\\\Dev\\\\HerPaceAI\\\\HerPace\" log --oneline -20 main)",
+      "Bash(git -C \"C:\\\\Dev\\\\HerPaceAI\\\\HerPace\" remote -v)",
+      "Bash(git checkout:*)",
+      "Bash(robocopy:*)",
+      "Bash(xcopy:*)",
+      "Bash(cmd /c:*)",
+      "Bash(git status:*)"
     ]
   }
 }

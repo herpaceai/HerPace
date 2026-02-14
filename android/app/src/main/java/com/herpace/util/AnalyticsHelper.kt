@@ -66,6 +66,24 @@ class AnalyticsHelper @Inject constructor(
         }
     }
 
+    fun logVoiceSessionStarted(sessionId: String) {
+        firebaseAnalytics?.logEvent("voice_session_started") {
+            param("session_id", sessionId)
+        }
+    }
+
+    fun logVoiceSessionCompleted(sessionId: String) {
+        firebaseAnalytics?.logEvent("voice_session_completed") {
+            param("session_id", sessionId)
+        }
+    }
+
+    fun logVoiceSessionError(errorType: String) {
+        firebaseAnalytics?.logEvent("voice_session_error") {
+            param("error_type", errorType)
+        }
+    }
+
     fun logError(source: String, errorType: String, message: String?) {
         firebaseAnalytics?.logEvent("app_error") {
             param("source", source)
